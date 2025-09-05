@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6782614ba2f044c6b7f52b81bb3b0173, type: 3}
   m_Name: MoveTo
   m_EditorClassIdentifier: 
-  actorId: 1
-  targetMode: 1
+  actorId: player
+  targetMode: 2
   worldPosition: {x: 7.917, y: 0.0173, z: -3.596}
   waypointId: 1
   targetActorId: 0
