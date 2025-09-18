@@ -74,7 +74,6 @@ public sealed class BotController : MonoBehaviour, IBotController
 
         while (!token.IsCancellationRequested)
         {
-            // Путь ещё строится
             if (navAgent.pathPending)
             {
                 LogOncePerFrame("pathPending...");
@@ -82,50 +81,55 @@ public sealed class BotController : MonoBehaviour, IBotController
                 continue;
             }
 
-            // Путь отказан или недоступен
             if (navAgent.pathStatus == NavMeshPathStatus.PathInvalid)
             {
                 Log("PathInvalid. ResetPath and exit.");
                 navAgent.ResetPath();
                 break;
             }
-            if (navAgent.pathStatus == NavMeshPathStatus.PathPartial)
-            {
-                Log("PathPartial (дойти не сможем полностью). Продолжаю пока могу.");
-            }
 
-            // Синхронизируем анимацию
+            // Обновляем анимацию
             if (animator != null && !string.IsNullOrEmpty(speedParam))
                 animator.SetFloat(speedParam, navAgent.velocity.magnitude);
 
-            // Условие прибытия
-            bool close = navAgent.remainingDistance <= navAgent.stoppingDistance;
-            bool stopped = !navAgent.hasPath || navAgent.velocity.sqrMagnitude <= 0.0001f;
-            if (close && stopped)
+            // --- Новый критерий прибытия ---
+            // 1) путь построен (не pending)
+            // 2) мы на расстоянии <= stoppingDistance (+ небольшой допуск)
+            // 3) и агент реально остановился ИЛИ сам себя остановил
+            const float arriveEps = 0.05f;
+            bool close = navAgent.remainingDistance != Mathf.Infinity &&
+                         navAgent.remainingDistance <= Mathf.Max(0.0f, navAgent.stoppingDistance) + arriveEps;
+
+            bool reallyStopped = navAgent.isStopped || navAgent.velocity.sqrMagnitude <= 0.001f;
+
+            if (close && reallyStopped)
             {
-                Log("Arrived.");
+                Log("Arrived (by distance+speed).");
                 break;
             }
 
-            // Детектор «застряли»: скорость долго ниже порога
+            // --- Детектор «застряли» с исключением зоны прибытия ---
             float v = navAgent.velocity.magnitude;
-            if (v < stuckSpeedEps)
-                stuckTimer += Time.deltaTime;
-            else
-                stuckTimer = 0f;
 
-            if (stuckTimer >= stuckCheckSeconds && navAgent.hasPath)
+            bool nearTarget = navAgent.remainingDistance != Mathf.Infinity &&
+                              navAgent.remainingDistance <= Mathf.Max(0.0f, navAgent.stoppingDistance) + 0.5f; // буфер, чтобы не трогать торможение
+
+            if (!nearTarget)
             {
-                Log($"Seems stuck for {stuckTimer:0.00}s. remaining={navAgent.remainingDistance:0.00}. Try repath.");
-                navAgent.SetDestination(worldPosition); // обновим путь
-                stuckTimer = 0f;
+                if (v < stuckSpeedEps) stuckTimer += Time.deltaTime;
+                else stuckTimer = 0f;
+
+                if (stuckTimer >= stuckCheckSeconds && navAgent.hasPath)
+                {
+                    Log($"Seems stuck for {stuckTimer:0.00}s. remaining={navAgent.remainingDistance:0.00}. Try repath.");
+                    navAgent.SetDestination(worldPosition);
+                    stuckTimer = 0f;
+                }
             }
-
-            // Периодический статус
-            if (Mathf.Abs(v - lastSpeed) > 0.05f)
+            else
             {
-                Log($"rem={navAgent.remainingDistance:0.00} vel={v:0.00} hasPath={navAgent.hasPath} status={navAgent.pathStatus}");
-                lastSpeed = v;
+                // рядом с целью — не трогаем путь и не сбиваем торможение
+                stuckTimer = 0f;
             }
 
             await UniTask.Yield(PlayerLoopTiming.Update, token);
