@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actorId: 1
   targetMode: 1
-  worldPosition: {x: 0, y: 0, z: 0}
+  worldPosition: {x: 8.295, y: 0.034, z: 2.553}
   waypointId: 2
   targetActorId: 1
   stoppingDistance: 0.01

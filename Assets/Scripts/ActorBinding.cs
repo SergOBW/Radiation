@@ -1,4 +1,5 @@
 using UnityEngine;
+using VContainer;
 
 public sealed class ActorBinding : MonoBehaviour
 {
@@ -9,7 +10,7 @@ public sealed class ActorBinding : MonoBehaviour
 
     private ActorRegistry _registry;
 
-    [VContainer.Inject]
+    [Inject]
     public void Construct(ActorRegistry registry) => _registry = registry;
 
     private void Awake()

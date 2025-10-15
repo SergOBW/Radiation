@@ -11,6 +11,7 @@ public sealed class SayConversationStepSo : ConversationStepSo
 
     public override async UniTask Execute(ConversationContext context)
     {
+        Debug.Log("SayConversationStepSo");
         if (string.IsNullOrWhiteSpace(actorId)) return;
         var speech = context.Registry.GetSpeech(actorId);
         if (speech == null) return;

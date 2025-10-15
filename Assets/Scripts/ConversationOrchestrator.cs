@@ -1,81 +1,109 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using VContainer.Unity;
+
 public sealed class ConversationContext
 {
     public ActorRegistry Registry { get; }
     public SignalHub Signals { get; }
-    public WaypointRegistry Waypoints { get; }
+    public BoolStateHub StateHub { get; }
+    public WaypointRepository Waypoints { get; }
     public CancellationToken Token { get; }
 
-    public ConversationContext(ActorRegistry registry, SignalHub signals, WaypointRegistry waypoints, CancellationToken token)
+    public ConversationContext(ActorRegistry registry, SignalHub signals, BoolStateHub  stateHub,WaypointRepository waypoints, CancellationToken token)
     {
         Registry = registry;
         Signals = signals;
         Waypoints = waypoints;
         Token = token;
+        StateHub = stateHub;
     }
 }
-
 
 public sealed class ConversationOrchestrator : IStartable
 {
     private readonly ActorRegistry _registry;
+    public SignalHub Signals => _signals;
+
     private readonly SignalHub _signals;
+    private readonly BoolStateHub _stateHub;
+
     private readonly ConversationScenarioSo _scenario;
-    private readonly WaypointRegistry _waypoints;
+    private readonly WaypointRepository _waypoints;
 
     private CancellationTokenSource _cts;
     public bool IsRunning { get; private set; }
 
-    public ConversationOrchestrator(ActorRegistry registry,
+    private int _stepIndex;
+
+    public ConversationOrchestrator(int startStep,
+        ActorRegistry registry,
         SignalHub signals,
         ConversationScenarioSo scenario,
-        WaypointRegistry waypoints
-        )
+        WaypointRepository waypoints,
+        BoolStateHub stateHub)
     {
-        _registry = registry;
-        _signals = signals;
-        _scenario = scenario;
-        _waypoints = waypoints;
+        _stepIndex = startStep;
+        _registry   = registry;
+        _signals    = signals;
+        _scenario   = scenario;
+        _waypoints  = waypoints;
+        _stateHub = stateHub;
     }
 
     public void Start()
     {
-        RunAsync().Forget();
+        Restart().Forget();
+    }
+
+    public async UniTask Restart()
+    {
+        Stop();
+
+        await UniTask.Yield();
+
+        await RunAsync();
     }
 
     public async UniTask RunAsync()
     {
-        if (IsRunning) return;
         if (_scenario == null || _scenario.steps == null || _scenario.steps.Length == 0) return;
+        if (IsRunning) return;
 
-        IsRunning = true;
         _signals.Clear();
+
         _cts = new CancellationTokenSource();
+        IsRunning = true;
 
-        ConversationContext ctx = new ConversationContext(_registry, _signals, _waypoints,_cts.Token);
+        var ctx = new ConversationContext(_registry, _signals, _stateHub,_waypoints, _cts.Token);
 
-        for (int i = 0; i < _scenario.steps.Length; i++)
+        try
         {
-            if (_cts.IsCancellationRequested) break;
-
-            ConversationStepSo step = _scenario.steps[i];
-            if (step == null) continue;
-
-            try
+            for (; _stepIndex < _scenario.steps.Length; _stepIndex++)
             {
+                if (_cts.IsCancellationRequested) break;
+
+                var step = _scenario.steps[_stepIndex];
+                if (step == null) continue;
+
+                UnityEngine.Debug.Log($"[Conversation] Step {_stepIndex}/{_scenario.steps.Length - 1}: {step.name}");
+
                 await step.Execute(ctx);
             }
-            catch (System.OperationCanceledException)
-            {
-                break;
-            }
         }
+        catch (System.OperationCanceledException)
+        {
 
-        _cts.Dispose();
-        _cts = null;
-        IsRunning = false;
+        }
+        finally
+        {
+            IsRunning = false;
+
+            _cts?.Dispose();
+            _cts = null;
+
+            _stepIndex = 0;
+        }
     }
 
     public void Stop()

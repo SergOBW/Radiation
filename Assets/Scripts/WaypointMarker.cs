@@ -5,19 +5,10 @@ public sealed class WaypointMarker : MonoBehaviour
 {
     [SerializeField] private string waypointId;
 
-    private WaypointRegistry _registry;
+    private WaypointRepository _repository;
 
-    [Inject] public void Construct(WaypointRegistry registry) => _registry = registry;
-
-    private void OnEnable()
+    [Inject] public void Construct(WaypointRepository repository)
     {
-        if (_registry != null && !string.IsNullOrWhiteSpace(waypointId))
-            _registry.Register(waypointId, transform);
-    }
-
-    private void OnDisable()
-    {
-        if (_registry != null && !string.IsNullOrWhiteSpace(waypointId))
-            _registry.Unregister(waypointId, transform);
+        _repository = repository;
     }
 }

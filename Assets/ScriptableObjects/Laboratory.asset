@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: Laboratory
   m_EditorClassIdentifier: Assembly-CSharp::ConversationScenarioSo
   steps:
-  - {fileID: 11400000, guid: 1e1c6184076a1884e867c1c4691dfa22, type: 2}
   - {fileID: 11400000, guid: 84fdfc97927d7624f9d988abc16738de, type: 2}
   - {fileID: 11400000, guid: b18bb4e0182c7a44fbab13801cc0a381, type: 2}
   - {fileID: 11400000, guid: 79ca7a46d28e65044b296e7299b04aff, type: 2}
@@ -24,3 +23,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 24ded60ad13e4264084683420994d184, type: 2}
   - {fileID: 11400000, guid: 5467583800d0e4a45a3ab1fd46d1ee07, type: 2}
   - {fileID: 11400000, guid: c2984abcda854b842bd29d876744f20b, type: 2}
+  - {fileID: 11400000, guid: 0a404337010f26a4fa13fa44bca6719d, type: 2}
+  - {fileID: 11400000, guid: df7a18b3c46acfa48ac10157902f46c3, type: 2}
+  - {fileID: 11400000, guid: c5517e1e1f86fca43943c096581ef7a5, type: 2}
+  - {fileID: 11400000, guid: 22d275cefd74b474a83efbbb18e96a8c, type: 2}
