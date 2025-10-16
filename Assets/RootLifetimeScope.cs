@@ -7,15 +7,19 @@ public sealed class RootLifetimeScope : LifetimeScope
 {
     [SerializeField] private ConversationScenarioSo scenario;
     [SerializeField] private WaypointRepository waypointRepository;
+    [SerializeField] private ActorRepository repository;
+    [SerializeField] private StateFlagSpeechReactorRepository stateFlagSpeechReactorRepository;
 
     [SerializeField] private int startStep = 0;
 
     protected override void Configure(IContainerBuilder builder)
     {
-        builder.Register<ActorRegistry>(Lifetime.Singleton);
         builder.Register<BoolStateHub>(Lifetime.Singleton);
         builder.Register<SignalHub>(Lifetime.Singleton);
+
         builder.RegisterInstance(waypointRepository);
+        builder.RegisterInstance(repository);
+        builder.RegisterInstance(stateFlagSpeechReactorRepository);
 
         builder.RegisterInstance(scenario);
         builder

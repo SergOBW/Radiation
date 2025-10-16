@@ -2,7 +2,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using VContainer;
 
-public sealed class VRStateHubRepositoryMB : MonoBehaviour
+public interface IStateHubUser
+{
+    void SetStateHub(BoolStateHub stateHub);
+}
+
+public sealed class VRStateHubRepository : MonoBehaviour
 {
     [Inject] private BoolStateHub _stateHub;
 
@@ -23,7 +28,7 @@ public sealed class VRStateHubRepositoryMB : MonoBehaviour
             {
                 var mb = all[i];
                 if (mb == null) continue;
-                if (mb is VRHoldFlagEmitter) stateUsers.Add(mb);
+                if (mb is IStateHubUser) stateUsers.Add(mb);
             }
         }
 
@@ -33,7 +38,7 @@ public sealed class VRStateHubRepositoryMB : MonoBehaviour
             var mb = stateUsers[i];
             if (mb == null) continue;
 
-            var user = mb as VRHoldFlagEmitter;
+            var user = mb as IStateHubUser;
             if (user != null) user.SetStateHub(_stateHub);
         }
 
@@ -50,7 +55,7 @@ public sealed class VRStateHubRepositoryMB : MonoBehaviour
         {
             var mb = all[i];
             if (mb == null) continue;
-            if (mb is VRHoldFlagEmitter) stateUsers.Add(mb);
+            if (mb is IStateHubUser) stateUsers.Add(mb);
         }
     }
 #endif

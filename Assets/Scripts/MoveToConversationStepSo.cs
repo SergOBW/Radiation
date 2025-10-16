@@ -34,7 +34,7 @@ public sealed class MoveToConversationStepSo : ConversationStepSo
 
         if (string.IsNullOrWhiteSpace(aid)) return;
 
-        var bot = context.Registry.GetBot(aid);
+        var bot = context.repository.GetBot(aid);
         Debug.Log($"[MoveToStep] botFound={bot != null}");
         if (bot == null) return;
 
@@ -103,7 +103,7 @@ public sealed class MoveToConversationStepSo : ConversationStepSo
 
                 if (!string.IsNullOrEmpty(tid))
                 {
-                    var t = ctx.Registry.GetRoot(tid);
+                    var t = ctx.repository.GetRoot(tid);
                     if (t != null)
                     {
                         pos = t.position;

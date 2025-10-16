@@ -1,109 +1,150 @@
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using UnityEngine;
 
-public class BoolStateHub
+public sealed class BoolStateHub
 {
-    private sealed class Entry
+    private sealed class StateEntry
     {
-        public bool Value;
-        public readonly List<UniTaskCompletionSource<bool>> WaitTrue = new List<UniTaskCompletionSource<bool>>();
-        public readonly List<UniTaskCompletionSource<bool>> WaitFalse = new List<UniTaskCompletionSource<bool>>();
+        public bool IsTrue;
+        public readonly List<UniTaskCompletionSource<bool>> WaitTrueSources = new List<UniTaskCompletionSource<bool>>();
+        public readonly List<UniTaskCompletionSource<bool>> WaitFalseSources = new List<UniTaskCompletionSource<bool>>();
     }
 
-    private readonly Dictionary<string, Entry> _entries = new Dictionary<string, Entry>();
+    private readonly Dictionary<string, StateEntry> _entries = new Dictionary<string, StateEntry>();
 
-    private Entry GetOrCreate(string key)
+    private StateEntry GetOrCreateEntry(string key)
     {
-        if (!_entries.TryGetValue(key, out var e))
+        if (string.IsNullOrWhiteSpace(key))
+            return null;
+
+        if (!_entries.TryGetValue(key, out StateEntry entry))
         {
-            e = new Entry();
-            _entries[key] = e;
+            entry = new StateEntry();
+            _entries[key] = entry;
+            Debug.Log($"[BoolStateHub] Создан новый ключ '{key}'.");
         }
-        return e;
+
+        return entry;
     }
 
     public void SetTrue(string key)
     {
-        if (string.IsNullOrWhiteSpace(key)) return;
-        var e = GetOrCreate(key);
-        if (e.Value) return;
+        var entry = GetOrCreateEntry(key);
+        if (entry == null) return;
+        if (entry.IsTrue) return;
 
-        e.Value = true;
+        entry.IsTrue = true;
+        Debug.Log($"[BoolStateHub] SetTrue('{key}').");
 
-        // Разбудить ожидающих true
-        for (int i = 0; i < e.WaitTrue.Count; i++)
+        for (int i = 0; i < entry.WaitTrueSources.Count; i++)
         {
-            var src = e.WaitTrue[i];
-            if (!src.Task.Status.IsCompleted()) src.TrySetResult(true);
+            var source = entry.WaitTrueSources[i];
+            source.TrySetResult(true);
         }
-        e.WaitTrue.Clear();
+
+        if (entry.WaitTrueSources.Count > 0)
+            Debug.Log($"[BoolStateHub] Пробуждено {entry.WaitTrueSources.Count} ожидающих WaitUntilTrue('{key}').");
+
+        entry.WaitTrueSources.Clear();
     }
 
     public void SetFalse(string key)
     {
-        if (string.IsNullOrWhiteSpace(key)) return;
-        var e = GetOrCreate(key);
-        if (!e.Value) return;
+        var entry = GetOrCreateEntry(key);
+        if (entry == null) return;
+        if (!entry.IsTrue) return;
 
-        e.Value = false;
+        entry.IsTrue = false;
+        Debug.Log($"[BoolStateHub] SetFalse('{key}').");
 
-        // Разбудить ожидающих false
-        for (int i = 0; i < e.WaitFalse.Count; i++)
+        for (int i = 0; i < entry.WaitFalseSources.Count; i++)
         {
-            var src = e.WaitFalse[i];
-            if (!src.Task.Status.IsCompleted()) src.TrySetResult(true);
+            var source = entry.WaitFalseSources[i];
+            source.TrySetResult(true);
         }
-        e.WaitFalse.Clear();
+
+        if (entry.WaitFalseSources.Count > 0)
+            Debug.Log($"[BoolStateHub] Пробуждено {entry.WaitFalseSources.Count} ожидающих WaitUntilFalse('{key}').");
+
+        entry.WaitFalseSources.Clear();
     }
 
     public bool IsTrue(string key)
     {
         if (string.IsNullOrWhiteSpace(key)) return false;
-        if (!_entries.TryGetValue(key, out var e)) return false;
-        return e.Value;
+        if (!_entries.TryGetValue(key, out StateEntry entry)) return false;
+
+        Debug.Log($"[BoolStateHub] IsTrue('{key}') = {entry.IsTrue}.");
+        return entry.IsTrue;
     }
 
-    public async UniTask WaitUntilTrue(string key, CancellationToken token)
+    public async UniTask WaitUntilTrue(string key, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(key)) return;
-        var e = GetOrCreate(key);
+        var entry = GetOrCreateEntry(key);
+        if (entry == null) return;
 
-        if (e.Value) return; // уже true
-
-        var src = new UniTaskCompletionSource<bool>();
-        e.WaitTrue.Add(src);
-
-        using (token.Register(() =>
+        if (entry.IsTrue)
         {
-            if (!src.Task.Status.IsCompleted()) src.TrySetCanceled();
-        }))
+            Debug.Log($"[BoolStateHub] WaitUntilTrue('{key}') уже true — выход.");
+            return;
+        }
+
+        Debug.Log($"[BoolStateHub] WaitUntilTrue('{key}') — ожидание...");
+        var source = new UniTaskCompletionSource<bool>();
+        entry.WaitTrueSources.Add(source);
+
+        var registration = cancellationToken.Register(CancelWaiter, source);
+        try
         {
-            await src.Task;
+            await source.Task;
+            Debug.Log($"[BoolStateHub] WaitUntilTrue('{key}') завершено.");
+        }
+        finally
+        {
+            registration.Dispose();
         }
     }
 
-    public async UniTask WaitUntilFalse(string key, CancellationToken token)
+    public async UniTask WaitUntilFalse(string key, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(key)) return;
-        var e = GetOrCreate(key);
+        var entry = GetOrCreateEntry(key);
+        if (entry == null) return;
 
-        if (!e.Value) return; // уже false
-
-        var src = new UniTaskCompletionSource<bool>();
-        e.WaitFalse.Add(src);
-
-        using (token.Register(() =>
+        if (!entry.IsTrue)
         {
-            if (!src.Task.Status.IsCompleted()) src.TrySetCanceled();
-        }))
+            Debug.Log($"[BoolStateHub] WaitUntilFalse('{key}') уже false — выход.");
+            return;
+        }
+
+        Debug.Log($"[BoolStateHub] WaitUntilFalse('{key}') — ожидание...");
+        var source = new UniTaskCompletionSource<bool>();
+        entry.WaitFalseSources.Add(source);
+
+        var registration = cancellationToken.Register(CancelWaiter, source);
+        try
         {
-            await src.Task;
+            await source.Task;
+            Debug.Log($"[BoolStateHub] WaitUntilFalse('{key}') завершено.");
+        }
+        finally
+        {
+            registration.Dispose();
         }
     }
 
     public void Clear()
     {
         _entries.Clear();
+        Debug.Log("[BoolStateHub] Очистка всех состояний.");
+    }
+
+    private static void CancelWaiter(object state)
+    {
+        var source = state as UniTaskCompletionSource<bool>;
+        if (source == null) return;
+        source.TrySetCanceled();
+        Debug.Log("[BoolStateHub] Ожидание отменено через токен.");
     }
 }

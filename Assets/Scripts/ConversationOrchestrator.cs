@@ -4,15 +4,15 @@ using VContainer.Unity;
 
 public sealed class ConversationContext
 {
-    public ActorRegistry Registry { get; }
+    public ActorRepository repository { get; }
     public SignalHub Signals { get; }
     public BoolStateHub StateHub { get; }
     public WaypointRepository Waypoints { get; }
     public CancellationToken Token { get; }
 
-    public ConversationContext(ActorRegistry registry, SignalHub signals, BoolStateHub  stateHub,WaypointRepository waypoints, CancellationToken token)
+    public ConversationContext(ActorRepository repository, SignalHub signals, BoolStateHub  stateHub,WaypointRepository waypoints, CancellationToken token)
     {
-        Registry = registry;
+        this.repository = repository;
         Signals = signals;
         Waypoints = waypoints;
         Token = token;
@@ -22,7 +22,7 @@ public sealed class ConversationContext
 
 public sealed class ConversationOrchestrator : IStartable
 {
-    private readonly ActorRegistry _registry;
+    private readonly ActorRepository _repository;
     public SignalHub Signals => _signals;
 
     private readonly SignalHub _signals;
@@ -37,14 +37,14 @@ public sealed class ConversationOrchestrator : IStartable
     private int _stepIndex;
 
     public ConversationOrchestrator(int startStep,
-        ActorRegistry registry,
+        ActorRepository repository,
         SignalHub signals,
         ConversationScenarioSo scenario,
         WaypointRepository waypoints,
         BoolStateHub stateHub)
     {
         _stepIndex = startStep;
-        _registry   = registry;
+        _repository   = repository;
         _signals    = signals;
         _scenario   = scenario;
         _waypoints  = waypoints;
@@ -75,7 +75,7 @@ public sealed class ConversationOrchestrator : IStartable
         _cts = new CancellationTokenSource();
         IsRunning = true;
 
-        var ctx = new ConversationContext(_registry, _signals, _stateHub,_waypoints, _cts.Token);
+        var ctx = new ConversationContext(_repository, _signals, _stateHub,_waypoints, _cts.Token);
 
         try
         {

@@ -11,7 +11,7 @@ public sealed class PlayAnimConversationStepSo : ConversationStepSo
     public override async UniTask Execute(ConversationContext context)
     {
         if (string.IsNullOrWhiteSpace(actorId) || string.IsNullOrWhiteSpace(stateName)) return;
-        IBotController b = context.Registry.GetBot(actorId);
+        IBotController b = context.repository.GetBot(actorId);
         if (b == null) return;
         await b.PlayAnimationAsync(stateName, normalizedTime, waitForExit, context.Token);
     }

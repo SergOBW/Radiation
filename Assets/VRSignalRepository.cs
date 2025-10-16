@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.XR.Interaction.Toolkit;
 using VContainer;
 
-public sealed class VRSignalRepositoryMB : MonoBehaviour
+public sealed class VRSignalRepository : MonoBehaviour
 {
     [Inject] private ConversationOrchestrator _orchestrator;
 
@@ -30,7 +29,6 @@ public sealed class VRSignalRepositoryMB : MonoBehaviour
             }
         }
 
-        Debug.Log($"[VRSignalRepository] Registered {grabbers.Count} VR grab emitters.");
     }
 
     private void OnValidate()

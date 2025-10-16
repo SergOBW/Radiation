@@ -1,23 +1,28 @@
 using UnityEngine;
-using VContainer;
 
 public sealed class ActorBinding : MonoBehaviour
 {
     [SerializeField] private string actorId;
     [SerializeField] private SpeechService speechService;
-    [SerializeField] private BotController botController;
+    [SerializeField] private Component botComponent; // должен реализовывать IBotController
     [SerializeField] private Transform rootTransform;
 
-    private ActorRegistry _registry;
+    public string ActorId => actorId;
+    public SpeechService Speech => speechService;
+    public IBotController Bot => botComponent as IBotController;
+    public Transform Root => rootTransform != null ? rootTransform : transform;
 
-    [Inject]
-    public void Construct(ActorRegistry registry) => _registry = registry;
-
-    private void Awake()
+#if UNITY_EDITOR
+    private void OnValidate()
     {
-        if (_registry == null) return;
-        if (speechService != null) _registry.RegisterSpeech(actorId, speechService);
-        if (botController != null) _registry.RegisterBot(actorId, botController);
-        _registry.RegisterRootTransform(actorId, rootTransform != null ? rootTransform : transform);
+        if (string.IsNullOrWhiteSpace(actorId))
+            actorId = gameObject.name;
+
+        if (botComponent != null && !(botComponent is IBotController))
+            Debug.LogWarning($"[ActorBinding] botComponent у '{actorId}' не реализует IBotController.", botComponent);
+
+        if (rootTransform == null)
+            rootTransform = transform;
     }
+#endif
 }

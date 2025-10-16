@@ -3,7 +3,7 @@ using TMPro;
 using Cysharp.Threading.Tasks;
 using System.Threading;
 
-public sealed class SpeechService : MonoBehaviour, ISpeechService
+public sealed class SpeechService : MonoBehaviour
 {
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private TMP_Text subtitleText;

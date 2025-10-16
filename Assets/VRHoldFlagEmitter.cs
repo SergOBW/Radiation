@@ -4,7 +4,7 @@ using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using VContainer;
 
 [RequireComponent(typeof(XRGrabInteractable))]
-public sealed class VRHoldFlagEmitter : MonoBehaviour
+public sealed class VRHoldFlagEmitter : MonoBehaviour, IStateHubUser
 {
     [SerializeField] private string holdKeyPrefix = "Held:"; // Итоговый ключ = prefix + id
     [SerializeField] private string objectId = "Default";     // Подкинь из инспектора или сгенерируй

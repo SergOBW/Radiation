@@ -5,7 +5,7 @@ using VContainer;
 using UnityEngine.InputSystem;
 #endif
 
-public sealed class VRSelectSignalRepositoryMB : MonoBehaviour
+public sealed class VRSelectSignalRepository : MonoBehaviour
 {
     [Inject] private ConversationOrchestrator _orchestrator;
 
@@ -40,8 +40,6 @@ public sealed class VRSelectSignalRepositoryMB : MonoBehaviour
                 s.ConfigureInputActions(leftSelect, rightSelect);
 #endif
         }
-
-        Debug.Log($"[VRSelectSignalRepositoryMB] Registered {selectors.Count} VR select emitters.");
     }
 
     private void OnValidate()
