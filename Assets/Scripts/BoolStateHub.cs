@@ -76,7 +76,7 @@ public sealed class BoolStateHub
         if (string.IsNullOrWhiteSpace(key)) return false;
         if (!_entries.TryGetValue(key, out StateEntry entry)) return false;
 
-        Debug.Log($"[BoolStateHub] IsTrue('{key}') = {entry.IsTrue}.");
+
         return entry.IsTrue;
     }
 

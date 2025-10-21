@@ -9,10 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a6d1a658d03a455d849da03f3d97b90e, type: 3}
-  m_Name: WaitForHold
+  m_Script: {fileID: 11500000, guid: 444aa371fc7849c18124ca36811904be, type: 3}
+  m_Name: RadiometerTwoPartsSelected
   m_EditorClassIdentifier: 
   actorId: 1
-  keyPrefix: 'Held:'
-  objectId: Birka
-  waitForTrue: 1
+  signal: RadiometerTwoPartsSelected

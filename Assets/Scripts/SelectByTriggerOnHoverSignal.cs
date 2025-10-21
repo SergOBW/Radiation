@@ -8,7 +8,7 @@ using UnityEngine.InputSystem;
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(XRBaseInteractable))]
-public sealed class VRSignalOnSelectActionWhileSelected : MonoBehaviour
+public sealed class SelectByTriggerOnHoverSignal : MonoBehaviour
 {
     [Header("Сигнал")]
     [SerializeField] private string signalOnPress = "SelectedTrigger";

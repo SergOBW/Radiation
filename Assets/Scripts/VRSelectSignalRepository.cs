@@ -16,14 +16,14 @@ public sealed class VRSelectSignalRepository : MonoBehaviour
 #endif
 
     [Header("Auto-registered select objects")]
-    [SerializeField] private List<VRSignalOnSelectActionWhileSelected> selectors = new();
+    [SerializeField] private List<SelectByTriggerOnHoverSignal> selectors = new();
 
     private void Awake()
     {
         if (selectors.Count == 0)
         {
 #if UNITY_2023_1_OR_NEWER
-            selectors.AddRange(FindObjectsByType<VRSignalOnSelectActionWhileSelected>(FindObjectsInactive.Include, FindObjectsSortMode.None));
+            selectors.AddRange(FindObjectsByType<SelectByTriggerOnHoverSignal>(FindObjectsInactive.Include, FindObjectsSortMode.None));
 #else
             selectors.AddRange(FindObjectsOfType<VRSignalOnSelectActionWhileSelected>(true));
 #endif
@@ -46,7 +46,7 @@ public sealed class VRSelectSignalRepository : MonoBehaviour
     {
 #if UNITY_EDITOR
         selectors.Clear();
-        selectors.AddRange(FindObjectsOfType<VRSignalOnSelectActionWhileSelected>(true));
+        selectors.AddRange(FindObjectsOfType<SelectByTriggerOnHoverSignal>(true));
 #endif
     }
 }

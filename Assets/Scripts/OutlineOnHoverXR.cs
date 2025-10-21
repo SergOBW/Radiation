@@ -2,35 +2,40 @@ using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
 /// <summary>
-/// В VR включает Outline на наведении и выключает при уходе курсора/руки.
-/// Требует на том же объекте Outline и XRBaseInteractable (например, XRGrabInteractable).
+/// В VR включает Outline на наведении и/или во время XR-захвата,
+/// а также умеет показывать стиль "виртуального выделения" (нажатие по триггеру при наведении).
+/// Требует Outline и XRBaseInteractable.
 /// </summary>
 [RequireComponent(typeof(Outline))]
 [RequireComponent(typeof(UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable))]
 public sealed class OutlineOnHoverXR : MonoBehaviour
 {
-    [Header("Outline во время захвата")]
+    [Header("Включать Outline, пока объект захвачен (XR select)")]
     [SerializeField] private bool enableWhileSelected = true;
 
-    [Header("Параметры обводки")]
-    [SerializeField] private Outline.Mode outlineMode = Outline.Mode.OutlineVisible;
+    [Header("Ховер-стиль")]
+    [SerializeField] private Outline.Mode hoverMode = Outline.Mode.OutlineVisible;
     [SerializeField] private Color hoverColor = Color.cyan;
     [SerializeField, Range(0f, 10f)] private float hoverWidth = 4f;
 
+    [Header("Стиль ВИРТУАЛЬНОГО ВЫДЕЛЕНИЯ")]
+    [SerializeField] private bool useSelectedStyle = true;
+    [SerializeField] private Outline.Mode selectedMode = Outline.Mode.OutlineVisible;
+    [SerializeField] private Color selectedColor = new Color(0.4f, 1f, 0.6f, 1f);
+    [SerializeField, Range(0f, 10f)] private float selectedWidth = 6f;
+
     private Outline _outline;
     private UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable _interactable;
+
     private int _hoverCount;
+    private bool _virtuallySelected; // наше "выделение по триггеру при наведении"
 
     private void Awake()
     {
         _outline = GetComponent<Outline>();
         _interactable = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable>();
 
-        // На старте обводка выключена (Outline сам добавляет/убирает материалы в OnEnable/OnDisable)
-        if (_outline.enabled)
-        {
-            _outline.enabled = false;
-        }
+        if (_outline.enabled) _outline.enabled = false;
     }
 
     private void OnEnable()
@@ -39,6 +44,8 @@ public sealed class OutlineOnHoverXR : MonoBehaviour
         _interactable.hoverExited.AddListener(OnHoverExited);
         _interactable.selectEntered.AddListener(OnSelectEntered);
         _interactable.selectExited.AddListener(OnSelectExited);
+
+        Reevaluate();
     }
 
     private void OnDisable()
@@ -52,63 +59,82 @@ public sealed class OutlineOnHoverXR : MonoBehaviour
         DisableOutline();
     }
 
+    // === Публичный API для внешних скриптов (наш селектор будет сюда дергать) ===
+    public void SetVirtualSelected(bool value)
+    {
+        _virtuallySelected = value;
+        Reevaluate();
+    }
+
+    public bool IsVirtualSelected() => _virtuallySelected;
+
+    // === XR callbacks ===
     private void OnHoverEntered(HoverEnterEventArgs args)
     {
         _hoverCount += 1;
-        ApplyOutlineSettings();
-        EnableOutline();
+        Reevaluate();
     }
 
     private void OnHoverExited(HoverExitEventArgs args)
     {
-        if (_hoverCount > 0)
-        {
-            _hoverCount -= 1;
-        }
-
-        if (_hoverCount == 0 && (!enableWhileSelected || !_interactable.isSelected))
-        {
-            DisableOutline();
-        }
+        if (_hoverCount > 0) _hoverCount -= 1;
+        Reevaluate();
     }
 
     private void OnSelectEntered(SelectEnterEventArgs args)
     {
-        if (enableWhileSelected)
-        {
-            ApplyOutlineSettings();
-            EnableOutline();
-        }
+        Reevaluate();
     }
 
     private void OnSelectExited(SelectExitEventArgs args)
     {
-        if (_hoverCount == 0)
-        {
-            DisableOutline();
-        }
+        Reevaluate();
     }
 
-    private void ApplyOutlineSettings()
+    // === Логика выбора подходящего стиля и вкл/выкл ===
+    private void Reevaluate()
     {
-        _outline.OutlineMode = outlineMode;
+        bool hovered = _hoverCount > 0;
+        bool xrSelected = _interactable.isSelected;
+
+        if (_virtuallySelected && useSelectedStyle)
+        {
+            ApplySelectedStyle();
+            EnableOutline();
+            return;
+        }
+
+        if (hovered || (enableWhileSelected && xrSelected))
+        {
+            ApplyHoverStyle();
+            EnableOutline();
+            return;
+        }
+
+        DisableOutline();
+    }
+
+    private void ApplyHoverStyle()
+    {
+        _outline.OutlineMode = hoverMode;
         _outline.OutlineColor = hoverColor;
         _outline.OutlineWidth = hoverWidth;
     }
 
+    private void ApplySelectedStyle()
+    {
+        _outline.OutlineMode = selectedMode;
+        _outline.OutlineColor = selectedColor;
+        _outline.OutlineWidth = selectedWidth;
+    }
+
     private void EnableOutline()
     {
-        if (!_outline.enabled)
-        {
-            _outline.enabled = true;
-        }
+        if (!_outline.enabled) _outline.enabled = true;
     }
 
     private void DisableOutline()
     {
-        if (_outline.enabled)
-        {
-            _outline.enabled = false;
-        }
+        if (_outline.enabled) _outline.enabled = false;
     }
 }
