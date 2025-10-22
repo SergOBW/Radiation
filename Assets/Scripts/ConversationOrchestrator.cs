@@ -5,15 +5,15 @@ using VContainer.Unity;
 public sealed class ConversationContext
 {
     public ActorRepository repository { get; }
-    public SignalHub Signals { get; }
+    public ScenarioSignalHub scenarioSignals { get; }
     public BoolStateHub StateHub { get; }
     public WaypointRepository Waypoints { get; }
     public CancellationToken Token { get; }
 
-    public ConversationContext(ActorRepository repository, SignalHub signals, BoolStateHub  stateHub,WaypointRepository waypoints, CancellationToken token)
+    public ConversationContext(ActorRepository repository, ScenarioSignalHub scenarioSignals, BoolStateHub  stateHub,WaypointRepository waypoints, CancellationToken token)
     {
         this.repository = repository;
-        Signals = signals;
+        this.scenarioSignals = scenarioSignals;
         Waypoints = waypoints;
         Token = token;
         StateHub = stateHub;
@@ -23,9 +23,9 @@ public sealed class ConversationContext
 public sealed class ConversationOrchestrator : IStartable
 {
     private readonly ActorRepository _repository;
-    public SignalHub Signals => _signals;
+    public ScenarioSignalHub scenarioSignals => _scenarioSignals;
 
-    private readonly SignalHub _signals;
+    private readonly ScenarioSignalHub _scenarioSignals;
     private readonly BoolStateHub _stateHub;
 
     private readonly ConversationScenarioSo _scenario;
@@ -38,14 +38,14 @@ public sealed class ConversationOrchestrator : IStartable
 
     public ConversationOrchestrator(int startStep,
         ActorRepository repository,
-        SignalHub signals,
+        ScenarioSignalHub scenarioSignals,
         ConversationScenarioSo scenario,
         WaypointRepository waypoints,
         BoolStateHub stateHub)
     {
         _stepIndex = startStep;
         _repository   = repository;
-        _signals    = signals;
+        _scenarioSignals    = scenarioSignals;
         _scenario   = scenario;
         _waypoints  = waypoints;
         _stateHub = stateHub;
@@ -70,12 +70,12 @@ public sealed class ConversationOrchestrator : IStartable
         if (_scenario == null || _scenario.steps == null || _scenario.steps.Length == 0) return;
         if (IsRunning) return;
 
-        _signals.Clear();
+        _scenarioSignals.Clear();
 
         _cts = new CancellationTokenSource();
         IsRunning = true;
 
-        var ctx = new ConversationContext(_repository, _signals, _stateHub,_waypoints, _cts.Token);
+        var ctx = new ConversationContext(_repository, _scenarioSignals, _stateHub,_waypoints, _cts.Token);
 
         try
         {

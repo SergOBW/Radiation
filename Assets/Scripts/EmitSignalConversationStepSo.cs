@@ -8,7 +8,7 @@ public sealed class EmitSignalConversationStepSo : ConversationStepSo
 
     public override UniTask Execute(ConversationContext context)
     {
-        if (!string.IsNullOrWhiteSpace(signal)) context.Signals.Emit(signal);
+        if (!string.IsNullOrWhiteSpace(signal)) context.scenarioSignals.Emit(signal);
         return UniTask.CompletedTask;
     }
 }

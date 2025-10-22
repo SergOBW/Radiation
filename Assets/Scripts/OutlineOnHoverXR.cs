@@ -1,15 +1,19 @@
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 /// <summary>
-/// В VR включает Outline на наведении и/или во время XR-захвата,
-/// а также умеет показывать стиль "виртуального выделения" (нажатие по триггеру при наведении).
-/// Требует Outline и XRBaseInteractable.
+/// Включает Outline при наведении/захвате XR, поддерживает "виртуальное выделение".
+/// Можно сослаться на XRBaseInteractable на другом объекте через инспектор.
+/// Если ссылки нет и на этом объекте тоже нет XRBaseInteractable — компонент сам выключится.
 /// </summary>
 [RequireComponent(typeof(Outline))]
-[RequireComponent(typeof(UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable))]
 public sealed class OutlineOnHoverXR : MonoBehaviour
 {
+    [Header("Источник XRBaseInteractable (опционально чужой объект)")]
+    [SerializeField] private XRBaseInteractable interactable; // можно указать в инспекторе
+    [SerializeField] private bool tryFindOnThisObjectIfNull = true;
+
     [Header("Включать Outline, пока объект захвачен (XR select)")]
     [SerializeField] private bool enableWhileSelected = true;
 
@@ -25,41 +29,42 @@ public sealed class OutlineOnHoverXR : MonoBehaviour
     [SerializeField, Range(0f, 10f)] private float selectedWidth = 6f;
 
     private Outline _outline;
-    private UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable _interactable;
-
     private int _hoverCount;
-    private bool _virtuallySelected; // наше "выделение по триггеру при наведении"
+    private bool _virtuallySelected;
+    private bool _subscribed;
 
     private void Awake()
     {
         _outline = GetComponent<Outline>();
-        _interactable = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable>();
+
+        if (interactable == null && tryFindOnThisObjectIfNull)
+            TryGetComponent(out interactable);
 
         if (_outline.enabled) _outline.enabled = false;
+
+        // Если так и не нашли XRBaseInteractable — безопасно отключаемся
+        if (interactable == null)
+        {
+            Debug.LogWarning($"[{nameof(OutlineOnHoverXR)}] XRBaseInteractable не найден ни в поле, ни на этом объекте. Компонент будет отключен.", this);
+            enabled = false;
+        }
     }
 
     private void OnEnable()
     {
-        _interactable.hoverEntered.AddListener(OnHoverEntered);
-        _interactable.hoverExited.AddListener(OnHoverExited);
-        _interactable.selectEntered.AddListener(OnSelectEntered);
-        _interactable.selectExited.AddListener(OnSelectExited);
-
+        if (interactable == null) return;
+        Subscribe();
         Reevaluate();
     }
 
     private void OnDisable()
     {
-        _interactable.hoverEntered.RemoveListener(OnHoverEntered);
-        _interactable.hoverExited.RemoveListener(OnHoverExited);
-        _interactable.selectEntered.RemoveListener(OnSelectEntered);
-        _interactable.selectExited.RemoveListener(OnSelectExited);
-
+        Unsubscribe();
         _hoverCount = 0;
         DisableOutline();
     }
 
-    // === Публичный API для внешних скриптов (наш селектор будет сюда дергать) ===
+    // Доступ извне
     public void SetVirtualSelected(bool value)
     {
         _virtuallySelected = value;
@@ -68,34 +73,44 @@ public sealed class OutlineOnHoverXR : MonoBehaviour
 
     public bool IsVirtualSelected() => _virtuallySelected;
 
-    // === XR callbacks ===
-    private void OnHoverEntered(HoverEnterEventArgs args)
+    // Подписки
+    private void Subscribe()
     {
-        _hoverCount += 1;
-        Reevaluate();
+        if (_subscribed || interactable == null) return;
+
+        interactable.hoverEntered.AddListener(OnHoverEntered);
+        interactable.hoverExited.AddListener(OnHoverExited);
+        interactable.selectEntered.AddListener(OnSelectEntered);
+        interactable.selectExited.AddListener(OnSelectExited);
+
+        _subscribed = true;
     }
 
-    private void OnHoverExited(HoverExitEventArgs args)
+    private void Unsubscribe()
     {
-        if (_hoverCount > 0) _hoverCount -= 1;
-        Reevaluate();
+        if (!_subscribed || interactable == null) return;
+
+        interactable.hoverEntered.RemoveListener(OnHoverEntered);
+        interactable.hoverExited.RemoveListener(OnHoverExited);
+        interactable.selectEntered.RemoveListener(OnSelectEntered);
+        interactable.selectExited.RemoveListener(OnSelectExited);
+
+        _subscribed = false;
     }
 
-    private void OnSelectEntered(SelectEnterEventArgs args)
-    {
-        Reevaluate();
-    }
+    // XR callbacks
+    private void OnHoverEntered(HoverEnterEventArgs _) { _hoverCount++; Reevaluate(); }
+    private void OnHoverExited(HoverExitEventArgs _)   { if (_hoverCount > 0) _hoverCount--; Reevaluate(); }
+    private void OnSelectEntered(SelectEnterEventArgs _) { Reevaluate(); }
+    private void OnSelectExited(SelectExitEventArgs _)   { Reevaluate(); }
 
-    private void OnSelectExited(SelectExitEventArgs args)
-    {
-        Reevaluate();
-    }
-
-    // === Логика выбора подходящего стиля и вкл/выкл ===
+    // Логика отображения
     private void Reevaluate()
     {
+        if (interactable == null) { DisableOutline(); return; }
+
         bool hovered = _hoverCount > 0;
-        bool xrSelected = _interactable.isSelected;
+        bool xrSelected = interactable.isSelected;
 
         if (_virtuallySelected && useSelectedStyle)
         {
@@ -137,4 +152,13 @@ public sealed class OutlineOnHoverXR : MonoBehaviour
     {
         if (_outline.enabled) _outline.enabled = false;
     }
+
+#if UNITY_EDITOR
+    // Удобство в инспекторе — авто-подстановка при изменениях
+    private void OnValidate()
+    {
+        if (interactable == null && tryFindOnThisObjectIfNull)
+            TryGetComponent(out interactable);
+    }
+#endif
 }

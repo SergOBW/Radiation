@@ -46,12 +46,12 @@ public sealed class VRSignalOnGrab : MonoBehaviour
     private void OnGrab(SelectEnterEventArgs _)
     {
         if (!string.IsNullOrWhiteSpace(signalOnGrab))
-            _orchestrator.Signals.Emit(signalOnGrab);
+            _orchestrator.scenarioSignals.Emit(signalOnGrab);
     }
 
     private void OnRelease(SelectExitEventArgs _)
     {
         if (!string.IsNullOrWhiteSpace(signalOnRelease))
-            _orchestrator.Signals.Emit(signalOnRelease);
+            _orchestrator.scenarioSignals.Emit(signalOnRelease);
     }
 }

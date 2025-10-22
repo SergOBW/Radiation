@@ -15,7 +15,8 @@ public sealed class RootLifetimeScope : LifetimeScope
     protected override void Configure(IContainerBuilder builder)
     {
         builder.Register<BoolStateHub>(Lifetime.Singleton);
-        builder.Register<SignalHub>(Lifetime.Singleton);
+        builder.Register<ScenarioSignalHub>(Lifetime.Singleton);
+        builder.Register<SceneSignalHub>(Lifetime.Singleton);
 
         builder.RegisterInstance(waypointRepository);
         builder.RegisterInstance(repository);

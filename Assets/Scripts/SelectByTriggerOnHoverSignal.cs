@@ -95,7 +95,7 @@ public sealed class SelectByTriggerOnHoverSignal : MonoBehaviour
         if (_interactable != null && _interactable.isHovered)
         {
             if (!string.IsNullOrWhiteSpace(signalOnPress))
-                _orchestrator?.Signals.Emit(signalOnPress);
+                _orchestrator?.scenarioSignals.Emit(signalOnPress);
         }
     }
 

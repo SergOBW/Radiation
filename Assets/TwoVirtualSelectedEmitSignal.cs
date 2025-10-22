@@ -58,7 +58,7 @@ public sealed class TwoVirtualSelectedEmitSignal : MonoBehaviour
     {
         if (!string.IsNullOrWhiteSpace(signalWhenBothSelected))
         {
-            _orchestrator?.Signals.Emit(signalWhenBothSelected);
+            _orchestrator?.scenarioSignals.Emit(signalWhenBothSelected);
             Debug.Log($"[TwoVirtualSelectedEmitSignal] Emitted: {signalWhenBothSelected}");
         }
     }

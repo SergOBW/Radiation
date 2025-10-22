@@ -9,6 +9,6 @@ public sealed class WaitSignalConversationStepSo : ConversationStepSo
     public override async UniTask Execute(ConversationContext context)
     {
         if (string.IsNullOrWhiteSpace(signal)) return;
-        await context.Signals.Wait(signal, context.Token);
+        await context.scenarioSignals.Wait(signal, context.Token);
     }
 }
