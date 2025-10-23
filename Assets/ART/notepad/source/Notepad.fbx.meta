@@ -3,7 +3,27 @@ guid: e946a6bd2eabfef47ad4b0a3ff0d1e3e
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Cardboard
+    second: {fileID: 2100000, guid: 7742447318b88c040aa079ece8af8d43, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Paper
+    second: {fileID: 2100000, guid: 97c10e04fe109bc43b388edc041cfdd2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: PaperSide
+    second: {fileID: 2100000, guid: 0566349027abf0b43a5aba5d089b901a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Plastic
+    second: {fileID: 2100000, guid: 13d443d2faf06cc47894d3acc329772c, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

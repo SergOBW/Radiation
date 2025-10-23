@@ -18,7 +18,7 @@ public sealed class RaycastDebug : MonoBehaviour
             string chain = "";
             for (int i = 0; i < hits.Length; i++)
                 chain += $"{i}: {hits[i].collider.name} [layer={LayerMask.LayerToName(hits[i].collider.gameObject.layer)}] dist={hits[i].distance:F3}\n";
-            Debug.Log($"[RaycastDebug]\n{chain}");
+            //Debug.Log($"[RaycastDebug]\n{chain}");
         }
         else
         {

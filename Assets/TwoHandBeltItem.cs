@@ -1,105 +1,100 @@
 using UnityEngine;
-using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
+using VContainer;
 
 [RequireComponent(typeof(Collider))]
-public sealed class TwoHandItemAutoRight : XRBaseInteractable
+public sealed class TwoHandItemAutoRight  : XRBaseInteractable
 {
     [Header("Anchors")]
     [SerializeField] private Transform beltPoint;
-    [SerializeField] private Transform leftHandPoint;  // точка в левой руке (для корня)
-    [SerializeField] private Transform rightHandPoint; // точка в правой руке (для правой модели)
+    [SerializeField] private Transform leftHandPoint;
+    [SerializeField] private Transform rightHandPoint;
 
     [Header("Right-hand model")]
-    [SerializeField] private Transform rightModel;     // отдельная модель правой руки (обычно скрыта)
+    [SerializeField] private Transform rightModel;
 
 #if ENABLE_INPUT_SYSTEM
     [Header("Input")]
-    [SerializeField] private InputActionReference leftSelect;   // performed -> взять; canceled -> вернуть
+    [SerializeField] private InputActionReference leftSelect;
 #endif
 
-    private bool _isHovering;   // навёлся (любой интерактор — обычно левая)
-    private bool _heldLeft;     // предмет в левой руке
+    [Header("BoolStateHub keys")]
+    [Tooltip("Ключ для состояния: предмет на поясе (true/false)")]
+    [SerializeField] private string keyOnBelt   = "Item.MyTool.OnBelt";
+    [Tooltip("Ключ для состояния: предмет в левой руке (true/false)")]
+    [SerializeField] private string keyInLeft   = "Item.MyTool.InLeftHand";
 
-    protected override void OnHoverEntered(HoverEnterEventArgs args)
-    {
-        base.OnHoverEntered(args);
-        _isHovering = true;
-    }
+    private bool _heldLeft;
 
-    protected override void OnHoverExited(HoverExitEventArgs args)
-    {
-        base.OnHoverExited(args);
-        _isHovering = false;
-    }
+    [Inject] private BoolStateHub _stateHub;
 
-#if ENABLE_INPUT_SYSTEM
     protected override void OnEnable()
     {
-        base.OnEnable();
+        base.OnEnable(); // <-- регистрирует интерактабл в XRInteractionManager
 
+#if ENABLE_INPUT_SYSTEM
         if (leftSelect && leftSelect.action != null)
         {
             leftSelect.action.performed += OnLeftPress;
             leftSelect.action.canceled  += OnLeftRelease;
             if (!leftSelect.action.enabled) leftSelect.action.Enable();
         }
-
-        // правая модель по умолчанию выключена
+#endif
         if (rightModel) rightModel.gameObject.SetActive(false);
     }
 
     protected override void OnDisable()
     {
+#if ENABLE_INPUT_SYSTEM
         if (leftSelect && leftSelect.action != null)
         {
             leftSelect.action.performed -= OnLeftPress;
             leftSelect.action.canceled  -= OnLeftRelease;
         }
+#endif
         base.OnDisable();
     }
 
+#if ENABLE_INPUT_SYSTEM
     private void OnLeftPress(InputAction.CallbackContext _)
     {
         if (_heldLeft) return;
-        if (!_isHovering) return;              // сначала навёлся, потом нажал
+        if (!isHovered) return;
         if (!leftHandPoint) return;
 
-        // корень → в левую руку
         Snap(transform, leftHandPoint);
         _heldLeft = true;
-        HoldStateBus.Instance?.BeginHold(HandSide.Left);
 
-        // правая модель: включить и посадить в правую руку (если настроена)
         if (rightModel && rightHandPoint)
         {
-            HoldStateBus.Instance?.BeginHold(HandSide.Right);
             rightModel.gameObject.SetActive(true);
             Snap(rightModel, rightHandPoint);
         }
+
+        SetStateOnBelt(false);
+        SetStateLeft(true);
     }
 
     private void OnLeftRelease(InputAction.CallbackContext _)
     {
         if (!_heldLeft) return;
 
-        // правая модель: спрятать и вернуть под корень
         if (rightModel)
         {
             rightModel.SetParent(transform, false);
             rightModel.localPosition = Vector3.zero;
             rightModel.localRotation = Quaternion.identity;
             rightModel.gameObject.SetActive(false);
-            HoldStateBus.Instance?.EndHold(HandSide.Right);
         }
 
-        // корень → на пояс
         if (beltPoint) Snap(transform, beltPoint);
         _heldLeft = false;
-        HoldStateBus.Instance?.EndHold(HandSide.Left);
+
+        SetStateLeft(false);
+        SetStateOnBelt(true);
     }
 #endif
 
@@ -110,4 +105,7 @@ public sealed class TwoHandItemAutoRight : XRBaseInteractable
         what.localPosition = Vector3.zero;
         what.localRotation = Quaternion.identity;
     }
+
+    private void SetStateOnBelt(bool v)  { if (_stateHub == null) return; if (v) _stateHub.SetTrue(keyOnBelt);  else _stateHub.SetFalse(keyOnBelt); }
+    private void SetStateLeft(bool v)    { if (_stateHub == null) return; if (v) _stateHub.SetTrue(keyInLeft);  else _stateHub.SetFalse(keyInLeft); }
 }

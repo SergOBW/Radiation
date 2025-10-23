@@ -12,7 +12,7 @@ public sealed class SignalDebugEmitter : MonoBehaviour
     [SerializeField] private bool emitOnStart = false;
 
     [Inject] private SceneSignalHub _sceneSignalHub;
-
+    [Inject] private ScenarioSignalHub _scenarioSignalHub;
     private void Start()
     {
         if (emitOnStart)
@@ -28,6 +28,7 @@ public sealed class SignalDebugEmitter : MonoBehaviour
         }
 
         _sceneSignalHub.EmitAll(signal);
+        _scenarioSignalHub.Emit(signal);
     }
 
 }

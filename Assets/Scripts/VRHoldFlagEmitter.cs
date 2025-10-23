@@ -14,10 +14,8 @@ public sealed class VRHoldFlagEmitter : MonoBehaviour, IStateHubUser
 
     private XRGrabInteractable _grab;
 
-    private string Key
-    {
-        get { return holdKeyPrefix + objectId; }
-    }
+    private string key => holdKeyPrefix + objectId;
+
     public void SetStateHub(BoolStateHub stateHub)
     {
         _stateHub = stateHub;
@@ -48,11 +46,11 @@ public sealed class VRHoldFlagEmitter : MonoBehaviour, IStateHubUser
 
     private void OnGrab(SelectEnterEventArgs args)
     {
-        _stateHub.SetTrue(Key);
+        _stateHub.SetTrue(key);
     }
 
     private void OnRelease(SelectExitEventArgs args)
     {
-        _stateHub.SetFalse(Key);
+        _stateHub.SetFalse(key);
     }
 }
