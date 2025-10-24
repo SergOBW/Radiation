@@ -30,6 +30,7 @@ public sealed class TwoHandItemAutoRight  : XRBaseInteractable
     private bool _heldLeft;
 
     [Inject] private BoolStateHub _stateHub;
+    public bool InLeftHand => _heldLeft;
 
     protected override void OnEnable()
     {
@@ -48,6 +49,7 @@ public sealed class TwoHandItemAutoRight  : XRBaseInteractable
 
     protected override void OnDisable()
     {
+        base.OnDisable(); // <-- регистрирует интерактабл в XRInteractionManager
 #if ENABLE_INPUT_SYSTEM
         if (leftSelect && leftSelect.action != null)
         {

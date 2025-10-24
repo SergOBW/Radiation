@@ -1,11 +1,8 @@
 using System;
 using System.Collections.Generic;
-
 using UnityEngine;
 
-
 #if UNITY_EDITOR
-
 using UnityEditor;
 // === Кастомный инспектор с кнопкой ===
 [CustomEditor(typeof(RadiationSurveyManager))]
@@ -109,9 +106,24 @@ public class RadiationSurveyManager : MonoBehaviour
                 z.Measured -= OnZoneMeasured;
     }
 
-    private void OnZoneMeasured(RadiationSampleZone zone, float avg)
+    // Теперь трактуем входной параметр как ПИК (максимум), а в блокнот записываем максимум из имеющегося и поступившего
+    private void OnZoneMeasured(RadiationSampleZone zone, float peak)
     {
-        notebook?.SetValue(zone.pointName, avg);
+        if (notebook != null)
+        {
+            if (notebook.TryGetValue(zone.pointName, out float prev))
+            {
+                if (peak > prev)
+                    notebook.SetValue(zone.pointName, peak);
+                // если новый меньше/равен — оставляем прежний максимум, ничего не пишем
+            }
+            else
+            {
+                // первая запись по зоне — просто сохраняем
+                notebook.SetValue(zone.pointName, peak);
+            }
+        }
+
         _completed++;
 
         if (!_fired && _completed >= _total)
@@ -124,4 +136,3 @@ public class RadiationSurveyManager : MonoBehaviour
     public bool IsPointCompleted(string pointName)
         => notebook != null && notebook.IsCompleted(pointName);
 }
-

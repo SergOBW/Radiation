@@ -46,7 +46,7 @@ public class RadiationSampleZone : MonoBehaviour
 
     private void Update()
     {
-        if (IsCompleted || sensor == null || sensor.probePoint == null) return;
+        if (IsCompleted || sensor == null || sensor.probePoint == null || !sensor.IsWorking) return;
 
         var probePos = sensor.probePoint.position;
         bool inside = IsInsideAnyCollider(probePos, edgeGrace);

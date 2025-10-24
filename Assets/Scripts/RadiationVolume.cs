@@ -4,6 +4,9 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 public class RadiationVolume : MonoBehaviour
 {
+    [Header("Спектр")]
+    public RadiationChannel channel = RadiationChannel.Gamma;
+
     [Tooltip("Мощность дозы внутри объёма (µSv/h)")]
     public float doseRateInside = 100f;
 
@@ -25,7 +28,10 @@ public class RadiationVolume : MonoBehaviour
     private void OnDrawGizmosSelected()
     {
         if (!_col) _col = GetComponent<Collider>();
-        Gizmos.color = new Color(0.2f, 1f, 0.2f, 0.2f);
+        Gizmos.color = new Color(
+            (channel & RadiationChannel.Gamma) != 0 ? 0.2f : 0.05f,
+            (channel & RadiationChannel.Beta)  != 0 ? 1f   : 0.2f,
+            0.2f, 0.2f);
         Gizmos.matrix = transform.localToWorldMatrix;
         if (_col is BoxCollider b)
             Gizmos.DrawWireCube(b.center, b.size);

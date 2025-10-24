@@ -1,8 +1,21 @@
 using System.Linq;
 using UnityEngine;
+[System.Flags]
+public enum RadiationChannel
+{
+    None  = 0,
+    Gamma = 1 << 0,
+    Beta  = 1 << 1,
+    // при желании можно добавить Alpha = 1<<2 и т.д.
+}
 
 public class DosimeterSensor : MonoBehaviour
 {
+    public bool IsWorking = true;
+
+    [Header("Чувствительность сенсора (что считаем)")]
+    public RadiationChannel sensitivity = RadiationChannel.Gamma; // Gamma, Beta, либо комбинировать флаги
+
     [Header("Точка замера (кончик зонда/антенна)")]
     public Transform probePoint;
 
@@ -26,6 +39,7 @@ public class DosimeterSensor : MonoBehaviour
 
     private void Update()
     {
+        if (!IsWorking) return;
         if (probePoint == null) return;
 
         if (Time.time >= _nextSampleTime)
@@ -34,7 +48,6 @@ public class DosimeterSensor : MonoBehaviour
             _target = SampleDoseRate(probePoint.position);
         }
 
-        // плавное сглаживание
         CurrentDoseRateMicroSvPerHour = Mathf.SmoothDamp(CurrentDoseRateMicroSvPerHour, _target, ref _vel, smoothingTime);
     }
 
@@ -42,7 +55,6 @@ public class DosimeterSensor : MonoBehaviour
     {
         float total = 0f;
 
-        // 1) Областью или просто всеми активными компонентами в сцене
         RadiationSource[] sources;
         RadiationVolume[] volumes;
 
@@ -61,13 +73,16 @@ public class DosimeterSensor : MonoBehaviour
         foreach (var s in sources)
         {
             if (!s.isActiveAndEnabled) continue;
+            if ((s.channel & sensitivity) == 0) continue; // <-- фильтрация по спектру
             if (Vector3.Distance(pos, s.transform.position) > maxSearchDistance) continue;
+
             total += s.GetDoseRate(pos);
         }
 
         foreach (var v in volumes)
         {
             if (!v.isActiveAndEnabled) continue;
+            if ((v.channel & sensitivity) == 0) continue; // <-- фильтрация по спектру
             total += v.GetDoseRate(pos);
         }
 

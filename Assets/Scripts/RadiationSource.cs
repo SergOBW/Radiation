@@ -5,6 +5,9 @@ public enum FalloffMode { InverseSquare, Linear, None }
 [ExecuteAlways]
 public class RadiationSource : MonoBehaviour
 {
+    [Header("Спектр")]
+    public RadiationChannel channel = RadiationChannel.Gamma;
+
     [Header("Интенсивность")]
     [Tooltip("Мощность дозы на расстоянии 1 метр (µSv/h)")]
     public float doseRateAt1m = 50f;
@@ -64,7 +67,10 @@ public class RadiationSource : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
-        Gizmos.color = new Color(1f, 0.6f, 0f, 0.25f);
+        Gizmos.color = new Color(
+            (channel & RadiationChannel.Gamma) != 0 ? 1f : 0.2f,
+            (channel & RadiationChannel.Beta)  != 0 ? 0.6f : 0.2f,
+            0f, 0.25f);
         Gizmos.DrawWireSphere(transform.position, Mathf.Max(radius, 0.1f));
     }
 }

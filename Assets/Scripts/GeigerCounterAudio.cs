@@ -7,34 +7,26 @@ using UnityEngine.XR.Interaction.Toolkit.Inputs.Haptics;
 public class GeigerContinuousAudio : MonoBehaviour
 {
     [Header("Источник данных")]
-    public DosimeterSensor sensor;
+    public DosimeterCore core;   // <-- вместо DosimeterSensor
 
     [Header("БАЗОВЫЙ ШУМ (непрерывный)")]
-    [Tooltip("Короткий зацикливаемый шум дозиметра без щелчков (seamless loop)")]
     public AudioClip baseLoopClip;
     [Range(0f,1f)] public float baseMaxVolume = 0.6f;
-    [Tooltip("Скорость сглаживания громкости, сек")]
     public float volumeSmooth = 0.25f;
-    [Tooltip("Скорость сглаживания питча, сек")]
     public float pitchSmooth = 0.25f;
     [Tooltip("К какому уровню (µSv/h) соответствует максимальная громкость baseMaxVolume")]
     public float baseReferenceRate = 100f;
-    [Tooltip("Минимальный уровень (µSv/h), ниже которого — полная тишина")]
+    [Tooltip("Минимальный уровень (µSv/h), ниже которого — тишина")]
     public float minAudibleRate = 0.5f;
-    [Tooltip("Диапазон изменения питча (1.0 = без изменений)")]
     public Vector2 pitchRange = new Vector2(0.9f, 1.25f);
-    [Tooltip("Маппинг громкости по степени: 1=линейно, 0.5=мягче, 2=агрессивнее")]
     public float volumePower = 0.7f;
 
     [Header("ALARM")]
     public bool alarmEnabled = true;
-    [Tooltip("Порог ВКЛ (µSv/h)")]
     public float alarmOnThreshold = 50f;
-    [Tooltip("Порог ВЫКЛ (µSv/h) — ниже этого выключаем (гистерезис)")]
     public float alarmOffThreshold = 40f;
     public AudioClip alarmLoopClip;
     [Range(0f,1f)] public float alarmVolume = 0.8f;
-    [Tooltip("Когда активен alarm — ослабляем базовый шум")]
     [Range(0f,1f)] public float duckingWhileAlarm = 0.35f;
 
 #if UNITY_XR_MANAGEMENT || ENABLE_VR
@@ -54,10 +46,7 @@ public class GeigerContinuousAudio : MonoBehaviour
     // internals
     private AudioSource _baseSrc;
     private AudioSource _alarmSrc;
-    private float _volVel;
-    private float _pitchVel;
-    private float _targetVol;
-    private float _targetPitch = 1f;
+    private float _volVel, _pitchVel, _targetVol;
     private bool  _alarmActive;
 
     private void Awake()
@@ -72,7 +61,6 @@ public class GeigerContinuousAudio : MonoBehaviour
             _baseSrc.volume = 0f;
             _baseSrc.pitch = 1f;
         }
-
         if (alarmLoopClip)
         {
             _alarmSrc = gameObject.AddComponent<AudioSource>();
@@ -95,37 +83,30 @@ public class GeigerContinuousAudio : MonoBehaviour
 
     private void Update()
     {
-        float rate = (sensor != null) ? Mathf.Max(0f, sensor.CurrentDoseRateMicroSvPerHour) : 0f;
+        float rate = (core != null) ? Mathf.Max(0f, core.CurrentMicroSvPerHour) : 0f;
 
-        // ==== БАЗОВЫЙ ШУМ ====
+        // базовый шум
         if (_baseSrc)
         {
-            // громкость: 0..1 → далее умножим на baseMaxVolume
             float norm = 0f;
             if (rate > minAudibleRate && baseReferenceRate > 0.0001f)
                 norm = Mathf.Clamp01(rate / baseReferenceRate);
-
-            // экспоненциальная кривая (приятнее на слух)
             norm = Mathf.Pow(norm, Mathf.Clamp(volumePower, 0.2f, 3f));
-
-            // ducking при активном alarm
             if (_alarmActive) norm *= duckingWhileAlarm;
 
             _targetVol = norm * baseMaxVolume;
             _baseSrc.volume = Mathf.SmoothDamp(_baseSrc.volume, _targetVol, ref _volVel, volumeSmooth);
 
-            // питч: от 1 к верхней границе при росте уровня
             float t = Mathf.Clamp01(rate / Mathf.Max(1e-4f, baseReferenceRate));
             float targetPitch = Mathf.Lerp(pitchRange.x, pitchRange.y, t);
             _baseSrc.pitch = Mathf.SmoothDamp(_baseSrc.pitch, targetPitch, ref _pitchVel, pitchSmooth);
 
-            // управление воспроизведением
             bool shouldPlay = _targetVol > 0.001f;
             if (shouldPlay && !_baseSrc.isPlaying) _baseSrc.Play();
-            if (!shouldPlay && _baseSrc.isPlaying && _baseSrc.volume < 0.02f) _baseSrc.Stop(); // мягкая остановка
+            if (!shouldPlay && _baseSrc.isPlaying && _baseSrc.volume < 0.02f) _baseSrc.Stop();
         }
 
-        // ==== ALARM с гистерезисом ====
+        // alarm
         if (_alarmSrc && alarmEnabled)
         {
             if (!_alarmActive && rate >= alarmOnThreshold)
@@ -133,7 +114,7 @@ public class GeigerContinuousAudio : MonoBehaviour
                 _alarmActive = true;
                 if (!_alarmSrc.isPlaying) _alarmSrc.Play();
 #if UNITY_XR_MANAGEMENT || ENABLE_VR
-                if (haptics) { try { haptics.SendHapticImpulse(hapticAmplitude, hapticDuration); } catch { } }
+                if (haptics) { try { haptics.SendHapticImpulse(hapticAmplitude, hapticDuration); } catch {} }
 #endif
             }
             else if (_alarmActive && rate <= alarmOffThreshold)
