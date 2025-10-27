@@ -13,25 +13,33 @@ public sealed class ScenarioSignalHub
 
     public void Emit(string signal)
     {
-        if (string.IsNullOrWhiteSpace(signal)) return;
+        UnityEngine.Debug.Log($"Emit called with signal: {signal}"); // добавлен дебаг
+
+        if (string.IsNullOrWhiteSpace(signal))
+        {
+            UnityEngine.Debug.Log("Signal is null or whitespace, returning.");
+            return;
+        }
 
         if (_sources.TryGetValue(signal, out var src))
         {
             if (!src.Task.Status.IsCompleted())
             {
+                UnityEngine.Debug.Log($"Completing source for signal: {signal}");
                 src.TrySetResult(true);
                 _sources.Remove(signal);
                 return;
             }
-            // уже лежит completed-флажок — ок, оставляем
+            UnityEngine.Debug.Log($"Source for signal {signal} already completed, ignore emit.");
             return;
         }
 
-        // Нет ждущего — кладём completed как флажок
         var completed = new UniTaskCompletionSource<bool>();
         completed.TrySetResult(true);
         _sources[signal] = completed;
+        UnityEngine.Debug.Log($"New emit set for signal: {signal}");
     }
+
 
     public async UniTask Wait(string signal, CancellationToken token)
     {

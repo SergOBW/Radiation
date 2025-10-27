@@ -96,7 +96,7 @@ public class RadiationSurveyManager : MonoBehaviour
             accumDose[z] = 0f;
             accumTime[z] = 0f;
             z.IsCompleted = false;
-            if (z.gameObject.activeSelf == false) z.gameObject.SetActive(true);
+            //if (z.gameObject.activeSelf == false) z.gameObject.SetActive(true);
         }
     }
 

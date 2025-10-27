@@ -22,10 +22,14 @@ public sealed class DosimeterCore : MonoBehaviour
 
     [Header("StateHub (сигналы)")]
     [Inject] private BoolStateHub _stateHub;
+
+    [Inject] private SceneSignalHub _sceneSignalHub;
+    [Inject] private ScenarioSignalHub _scenarioSignalHub;
+
     [SerializeField] private string keyModeSearch = "Dosimeter.Mode.Search";
     [SerializeField] private string keyModeMeasurement = "Dosimeter.Mode.Measurement";
-    [SerializeField] private string keySensorA = "Dosimeter.Sensor.A";
-    [SerializeField] private string keySensorB = "Dosimeter.Sensor.B";
+    [SerializeField] private string keySensorA = "Dosimeter.Sensor.Gamma";
+    [SerializeField] private string keySensorB = "Dosimeter.Sensor.Betta";
 
     public DosimeterMode Mode => mode;
     public SensorSlot ActiveSlot => activeSlot;
@@ -142,12 +146,20 @@ public sealed class DosimeterCore : MonoBehaviour
             {
                 _stateHub.SetTrue(keyModeSearch);
                 _stateHub.SetFalse(keyModeMeasurement);
+
+                _sceneSignalHub.EmitAll(keyModeSearch);
+                _scenarioSignalHub.Emit(keyModeSearch);
             }
             else
             {
                 _stateHub.SetTrue(keyModeMeasurement);
                 _stateHub.SetFalse(keyModeSearch);
+
+                _sceneSignalHub.EmitAll(keyModeMeasurement);
+                _scenarioSignalHub.Emit(keyModeMeasurement);
             }
+
+
         }
         catch (Exception e)
         {
@@ -165,11 +177,17 @@ public sealed class DosimeterCore : MonoBehaviour
             {
                 _stateHub.SetTrue(keySensorA);
                 _stateHub.SetFalse(keySensorB);
+
+                _sceneSignalHub.EmitAll(keySensorA);
+                _scenarioSignalHub.Emit(keySensorA);
             }
             else
             {
                 _stateHub.SetTrue(keySensorB);
                 _stateHub.SetFalse(keySensorA);
+
+                _sceneSignalHub.EmitAll(keySensorB);
+                _scenarioSignalHub.Emit(keySensorB);
             }
         }
         catch (Exception e)
