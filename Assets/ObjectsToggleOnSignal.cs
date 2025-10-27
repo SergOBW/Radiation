@@ -4,7 +4,7 @@ using System;
 using System.Threading;
 using VContainer;
 
-public sealed class ObjectsToggleOn : MonoBehaviour
+public sealed class ObjectsToggleOnSignal : MonoBehaviour
 {
     [Header("Сигнал, который ждём")]
     [SerializeField] private string listenSignal = "CaseOpened";
@@ -27,14 +27,22 @@ public sealed class ObjectsToggleOn : MonoBehaviour
     [Header("Debug")]
     [SerializeField] private bool logVerbose = true;
 
-    [Inject] private SceneSignalHub _sceneHub;
+    private SceneSignalHub _sceneHub;
 
     private CancellationTokenSource _cts;
 
-    private void Start()
+    [Inject]
+    public void Contruct(SceneSignalHub sceneHub)
     {
+        _sceneHub = sceneHub;
         _cts = new CancellationTokenSource();
         ListenLoopAsync(_cts.Token).Forget();
+
+        if (objectsToDisable != null)
+        {
+            foreach (var g in objectsToDisable)
+                if (g) { g.SetActive(false); }
+        }
     }
 
     private void OnDisable()

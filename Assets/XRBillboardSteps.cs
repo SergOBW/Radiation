@@ -42,6 +42,7 @@ public class XRStepsPanelWithSignals : MonoBehaviour
     private int _revealedCount = 0;
     private Coroutine _revealRoutine;
     private bool _isRevealing = false;
+    private bool _sequenceStarted = false;
 
     private void Reset()
     {
@@ -99,13 +100,26 @@ public class XRStepsPanelWithSignals : MonoBehaviour
         nextButton.onClick.AddListener(OnNextClicked);
     }
 
-    private void OnEnable() => StartSequenceFromBeginning();
-
-    private void StartSequenceFromBeginning()
+    private void OnEnable()
     {
-        _currentStepIndex = 0;
-        ShowStep(_currentStepIndex);
+        ClearUI();
         EmitIfNotEmpty(restartSignal); // Старт новой сессии — удобно сигналить, чтобы сценарий «сбросился»
+    }
+
+    private void ClearUI()
+    {
+        titleText.text = string.Empty;
+        bodyText.text = string.Empty;
+        SetNextButtonLabel("Начать");
+        _currentStepIndex = 0;
+        _sequenceStarted = false;
+    }
+
+    private void StartScenario()
+    {
+        _sequenceStarted = true;
+        SetNextButtonLabel("Далее");
+        ShowStep(_currentStepIndex);
     }
 
     private void ShowStep(int index)
@@ -150,14 +164,18 @@ public class XRStepsPanelWithSignals : MonoBehaviour
 
     private void OnNextClicked()
     {
-        // Если ещё идёт поочерёдный показ — показать всё мгновенно
+        if (!_sequenceStarted)
+        {
+            StartScenario();
+            return;
+        }
+
         if (_isRevealing)
         {
             RevealAllImmediately();
             return;
         }
 
-        // Текущий шаг завершён → шлём «completed» перед сменой индекса
         EmitStepCompleted(_currentStepIndex);
 
         bool isLastStep = _currentStepIndex >= steps.Length - 1;
@@ -168,8 +186,8 @@ public class XRStepsPanelWithSignals : MonoBehaviour
         }
         else
         {
-            // Завершили последний — перезапуск
-            StartSequenceFromBeginning();
+            _sequenceStarted = false;
+            ClearUI();
         }
     }
 

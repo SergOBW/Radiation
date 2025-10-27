@@ -3,15 +3,15 @@ using UnityEngine;
 using VContainer;
 
 public enum DosimeterMode { Search, Measurement }
-public enum SensorSlot { A, B }
+public enum SensorSlot { Gamma, Betta }
 
 [DisallowMultipleComponent]
 public sealed class DosimeterCore : MonoBehaviour
 {
     [Header("Сенсоры (заполни оба в инспекторе)")]
-    [SerializeField] private DosimeterSensor sensorA;
-    [SerializeField] private DosimeterSensor sensorB;
-    [SerializeField] private SensorSlot activeSlot = SensorSlot.A;
+    [SerializeField] private DosimeterSensor sensorGamma;
+    [SerializeField] private DosimeterSensor sensorBetta;
+    [SerializeField] private SensorSlot activeSlot = SensorSlot.Gamma;
 
     [Header("Режим")]
     [SerializeField] private DosimeterMode mode = DosimeterMode.Search;
@@ -29,7 +29,7 @@ public sealed class DosimeterCore : MonoBehaviour
 
     public DosimeterMode Mode => mode;
     public SensorSlot ActiveSlot => activeSlot;
-    public DosimeterSensor CurrentSensor => (activeSlot == SensorSlot.A) ? sensorA : sensorB;
+    public DosimeterSensor CurrentSensor => (activeSlot == SensorSlot.Gamma) ? sensorGamma : sensorBetta;
     public float MeasurementErrorPercent => measurementErrorPercent;
 
     public float CurrentMicroSvPerHour { get; private set; }
@@ -77,7 +77,7 @@ public sealed class DosimeterCore : MonoBehaviour
 
     public void ToggleSensor()
     {
-        SetActiveSensor(activeSlot == SensorSlot.A ? SensorSlot.B : SensorSlot.A);
+        SetActiveSensor(activeSlot == SensorSlot.Gamma ? SensorSlot.Betta : SensorSlot.Gamma);
     }
 
     public void ResetAll()
@@ -112,15 +112,15 @@ public sealed class DosimeterCore : MonoBehaviour
 
     private void SyncSensorsActiveState()
     {
-        if (activeSlot == SensorSlot.A)
+        if (activeSlot == SensorSlot.Gamma)
         {
-            ApplySensorState(sensorA, true);
-            ApplySensorState(sensorB, false);
+            ApplySensorState(sensorGamma, true);
+            ApplySensorState(sensorBetta, false);
         }
         else
         {
-            ApplySensorState(sensorA, false);
-            ApplySensorState(sensorB, true);
+            ApplySensorState(sensorGamma, false);
+            ApplySensorState(sensorBetta, true);
         }
     }
 
@@ -161,7 +161,7 @@ public sealed class DosimeterCore : MonoBehaviour
 
         try
         {
-            if (s == SensorSlot.A)
+            if (s == SensorSlot.Gamma)
             {
                 _stateHub.SetTrue(keySensorA);
                 _stateHub.SetFalse(keySensorB);

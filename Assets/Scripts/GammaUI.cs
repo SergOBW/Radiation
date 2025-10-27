@@ -2,15 +2,15 @@ using UnityEngine;
 using TMPro;
 
 [DisallowMultipleComponent]
-public sealed class DosimeterUI : MonoBehaviour
+public sealed class GammaUI : MonoBehaviour
 {
     [Header("Связь с ядром")]
     [SerializeField] private DosimeterCore core;
 
     [Header("TMP (настрой шрифты/размеры в инспекторе)")]
-    [SerializeField] private TMP_Text modeText;  // маленький заголовок: "Режим: ..."
-    [SerializeField] private TMP_Text valueBig;  // КРУПНОЕ число
-    [SerializeField] private TMP_Text auxText;   // мелкая подпись под числом
+    [SerializeField] private TMP_Text modeText;
+    [SerializeField] private TMP_Text valueBig;
+    [SerializeField] private TMP_Text auxText;
 
     [Header("Формат")]
     [SerializeField, Range(0,6)] private int decimals = 2;
@@ -21,8 +21,8 @@ public sealed class DosimeterUI : MonoBehaviour
         if (!core) return;
 
         core.ModeChanged += OnModeChanged;
-        core.ValuesUpdated += OnValuesUpdated;                 // Поиск
-        core.MeasurementValueUpdated += OnMeasurementUpdated;  // Измерение
+        core.ValuesUpdated += OnValuesUpdated;
+        core.MeasurementValueUpdated += OnMeasurementUpdated;
 
         ForceRefresh();
     }
@@ -41,11 +41,9 @@ public sealed class DosimeterUI : MonoBehaviour
         if (modeText)
             modeText.text = m == DosimeterMode.Search ? "Режим: ПОИСК" : "Режим: ИЗМЕРЕНИЕ";
 
-        // моментально перерисуем текущие значения
         ForceRefresh();
     }
 
-    // === Режим ПОИСК: КРУПНО — Пик; мелко — Текущая ===
     private void OnValuesUpdated(float current, float peak)
     {
         if (!core || core.Mode != DosimeterMode.Search) return;
@@ -55,8 +53,7 @@ public sealed class DosimeterUI : MonoBehaviour
         if (auxText)   auxText.text  = $"Текущая: {current.ToString("N"+decimals)} {unitRus}";
     }
 
-    // === Режим ИЗМЕРЕНИЕ: КРУПНО — Результат (текущая); мелко — Погрешность % ===
-    private void OnMeasurementUpdated(float mean, float sigma /* не показываем, только % */)
+    private void OnMeasurementUpdated(float mean, float sigma )
     {
         if (!core || core.Mode != DosimeterMode.Measurement) return;
 

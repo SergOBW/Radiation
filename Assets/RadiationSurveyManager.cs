@@ -29,19 +29,20 @@ public class RadiationSurveyManagerEditor : Editor
 [DisallowMultipleComponent]
 public class RadiationSurveyManager : MonoBehaviour
 {
+    [SerializeField] private DosimeterCore dosimeterCore;
     public Notebook notebook;
 
     [Header("Зоны (перетаскивай и меняй порядок вручную)")]
     public List<RadiationSampleZone> zones = new();
-
     public event Action AllCompleted;
     public event Action PointsListChanged;
-
-    public int Total => _total;
-    public int Completed => _completed;
+    public event Action<string> PointCompleted;
 
     private int _total, _completed;
     private bool _fired;
+    private Dictionary<RadiationSampleZone, float> accumDose = new();
+    private Dictionary<RadiationSampleZone, float> accumTime = new();
+    private HashSet<RadiationSampleZone> completedZones = new();
 
     private void OnEnable()
     {
@@ -50,13 +51,8 @@ public class RadiationSurveyManager : MonoBehaviour
 
     private void Start()
     {
-        WireZones();
+        InitializeMeasurement();
         PointsListChanged?.Invoke();
-    }
-
-    private void OnDestroy()
-    {
-        UnwireZones();
     }
 
     private void OnValidate()
@@ -79,52 +75,124 @@ public class RadiationSurveyManager : MonoBehaviour
         var foundSet = new HashSet<RadiationSampleZone>(found);
         zones.RemoveAll(z => !foundSet.Contains(z));
 
+        InitializeMeasurement();
+
 #if UNITY_EDITOR
-        if (!Application.isPlaying)
-            UnityEditor.EditorUtility.SetDirty(this);
+        if (!Application.isPlaying) EditorUtility.SetDirty(this);
 #endif
         PointsListChanged?.Invoke();
     }
 
-    private void WireZones()
+    private void InitializeMeasurement()
     {
-        UnwireZones();
-        _total = 0; _completed = 0; _fired = false;
-
+        _total = zones.Count;
+        _completed = 0;
+        _fired = false;
+        accumDose.Clear();
+        accumTime.Clear();
+        completedZones.Clear();
         foreach (var z in zones)
         {
-            if (z == null) continue;
-            _total++;
-            z.Measured += OnZoneMeasured;
+            accumDose[z] = 0f;
+            accumTime[z] = 0f;
+            z.IsCompleted = false;
+            if (z.gameObject.activeSelf == false) z.gameObject.SetActive(true);
         }
     }
 
-    private void UnwireZones()
+    private void Update()
     {
-        foreach (var z in zones)
-            if (z != null)
-                z.Measured -= OnZoneMeasured;
+        if (_fired || zones.Count == 0 || dosimeterCore == null || dosimeterCore.CurrentSensor == null) return;
+
+        var sensor = dosimeterCore.CurrentSensor;
+        if (!sensor.IsWorking || sensor.probePoint == null)
+        {
+            ResetAccumulations();
+            return;
+        }
+
+        Vector3 probePos = sensor.probePoint.position;
+        float currentDose = sensor.CurrentDoseRateMicroSvPerHour;
+
+        foreach (var zone in zones)
+        {
+            if (completedZones.Contains(zone)) continue;
+
+            if (!zone.IsInsideAnyCollider(probePos, 0.05f))
+            {
+                accumDose[zone] = 0f;
+                accumTime[zone] = 0f;
+                continue;
+            }
+
+            bool modeMatchesChannel = false;
+            switch (dosimeterCore.ActiveSlot)
+            {
+                case SensorSlot.Gamma:
+                    modeMatchesChannel = (zone.measureChannels & RadiationChannel.Gamma) != 0;
+                    break;
+                case SensorSlot.Betta:
+                    modeMatchesChannel = (zone.measureChannels & RadiationChannel.Beta) != 0;
+                    break;
+            }
+
+            if (!modeMatchesChannel)
+            {
+                accumDose[zone] = 0f;
+                accumTime[zone] = 0f;
+                continue;
+            }
+
+            if ((sensor.sensitivity & zone.measureChannels) == 0)
+            {
+                accumDose[zone] = 0f;
+                accumTime[zone] = 0f;
+                continue;
+            }
+
+            accumDose[zone] += currentDose * Time.deltaTime;
+            accumTime[zone] += Time.deltaTime;
+
+            if (accumTime[zone] >= zone.measurementTime)
+            {
+                float avg = accumDose[zone] / Mathf.Max(accumTime[zone], 0.0001f);
+                RecordMeasurement(zone, avg);
+            }
+        }
     }
 
-    // Теперь трактуем входной параметр как ПИК (максимум), а в блокнот записываем максимум из имеющегося и поступившего
-    private void OnZoneMeasured(RadiationSampleZone zone, float peak)
+
+    private void ResetAccumulations()
     {
+        foreach (var zone in zones)
+        {
+            accumDose[zone] = 0f;
+            accumTime[zone] = 0f;
+        }
+    }
+
+    private void RecordMeasurement(RadiationSampleZone zone, float peak)
+    {
+        if (completedZones.Contains(zone)) return;
+
+        completedZones.Add(zone);
+        _completed++;
+        zone.CompleteAndDeactivate();
+
         if (notebook != null)
         {
             if (notebook.TryGetValue(zone.pointName, out float prev))
             {
                 if (peak > prev)
                     notebook.SetValue(zone.pointName, peak);
-                // если новый меньше/равен — оставляем прежний максимум, ничего не пишем
             }
             else
             {
-                // первая запись по зоне — просто сохраняем
                 notebook.SetValue(zone.pointName, peak);
             }
         }
 
-        _completed++;
+        PointCompleted?.Invoke(zone.pointName);
 
         if (!_fired && _completed >= _total)
         {
@@ -134,5 +202,7 @@ public class RadiationSurveyManager : MonoBehaviour
     }
 
     public bool IsPointCompleted(string pointName)
-        => notebook != null && notebook.IsCompleted(pointName);
+    {
+        return notebook != null && notebook.IsCompleted(pointName);
+    }
 }

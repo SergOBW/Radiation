@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.Serialization;
+using VContainer;
 
 public class QuizManager : MonoBehaviour
 {
@@ -22,6 +24,13 @@ public class QuizManager : MonoBehaviour
     [SerializeField] private Color selectedColor = new Color(0.75f, 0.85f, 1.0f); // подсветка выбранного
     [SerializeField] private Color correctColor  = new Color(0.2f, 0.8f, 0.2f);
     [SerializeField] private Color wrongColor    = new Color(0.9f, 0.2f, 0.2f);
+
+    [Inject] private SceneSignalHub _sceneSignalHub;
+    [Inject] private ScenarioSignalHub _scenarioSignalHub;
+
+    [SerializeField]private string quizCompleteSignalName = "Quiz.AllQuestionsAnswered";
+    [SerializeField]private  string correctAnswerSignalName = "Quiz.CorrectAnswer";
+    [SerializeField]private  string wrongAnswerSignalName = "Quiz.WrongAnswer";
 
     private int _currentIndex = -1;
     private int _score = 0;
@@ -126,14 +135,15 @@ public class QuizManager : MonoBehaviour
 
         if (!_checked)
         {
-            // ЭТАП ПРОВЕРКИ
             if (_selectedIndex < 0)
-                return; // на всякий случай: не выбран ответ — ничего не делаем
+                return;
 
             bool isCorrect = (_selectedIndex == q.correctIndex);
             if (isCorrect) _score++;
 
-            // Красим правильный/неправильный и блокируем варианты
+            // Вызов сигналов с передачей индекса вопроса и выбранного индекса
+            EmitAnswerSignal(isCorrect, _currentIndex);
+
             for (int i = 0; i < answerButtons.Count; i++)
             {
                 if (!answerButtons[i].gameObject.activeInHierarchy) continue;
@@ -145,7 +155,6 @@ public class QuizManager : MonoBehaviour
                 }
                 else
                 {
-                    // выбранный неверный — красим wrong, остальные — возвращаем к normal (если хотите)
                     if (i == _selectedIndex)
                         SetButtonColor(answerButtons[i], wrongColor);
                     else
@@ -157,15 +166,35 @@ public class QuizManager : MonoBehaviour
 
             _checked = true;
 
-            // Меняем кнопку на "Следующий вопрос"/"Завершить"
             actionButtonLabel.text = lastQuestion ? "Завершить" : "Следующий вопрос";
-            actionButton.interactable = true; // пользователь может перейти дальше
+            actionButton.interactable = true;
         }
         else
         {
-            // ЭТАП ПЕРЕХОДА К СЛЕДУЮЩЕМУ ВОПРОСУ (второе нажатие)
             ShowNextQuestion();
         }
+    }
+
+    private void EmitAnswerSignal(bool isCorrect, int questionIndex)
+    {
+        // Тут можно формировать объект или строку с данными, если нужно
+        var signalName = isCorrect ? correctAnswerSignalName : wrongAnswerSignalName;
+
+        bool haveSceneHub = _sceneSignalHub != null;
+        bool haveScenarioHub = _scenarioSignalHub != null;
+
+        if (!haveSceneHub && !haveScenarioHub)
+        {
+            Debug.LogWarning("[QuizManager] No signal hubs injected.");
+            return;
+        }
+
+        string signal = $"{signalName}:{questionIndex}";
+
+        if (haveSceneHub) _sceneSignalHub.EmitAll(signal);
+        if (haveScenarioHub) _scenarioSignalHub.Emit(signal);
+
+        Debug.Log($"Signal emitted: {signalName} with payload: {signal}");
     }
 
     private void ShowResult()
@@ -175,6 +204,20 @@ public class QuizManager : MonoBehaviour
         resultText.text = $"Ваш результат: {_score} / {total}";
         actionButton.interactable = false;
         actionButtonLabel.text = "Готово";
+
+        bool haveSceneHub = _sceneSignalHub != null;
+        bool haveScenarioHub = _scenarioSignalHub != null;
+
+        if (!haveSceneHub && !haveScenarioHub)
+        {
+            Debug.LogWarning("[QuizManager] No signal hubs injected.");
+            return;
+        }
+
+        if (haveSceneHub) _sceneSignalHub.EmitAll(quizCompleteSignalName);
+        if (haveScenarioHub) _scenarioSignalHub.Emit(quizCompleteSignalName);
+
+        Debug.Log($"Signal emitted: {quizCompleteSignalName}");
     }
 
     private void SetButtonColor(Button btn, Color c)

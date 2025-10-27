@@ -34,7 +34,7 @@ public sealed class TwoHandItemAutoRight  : XRBaseInteractable
 
     protected override void OnEnable()
     {
-        base.OnEnable(); // <-- регистрирует интерактабл в XRInteractionManager
+        base.OnEnable();
 
 #if ENABLE_INPUT_SYSTEM
         if (leftSelect && leftSelect.action != null)
@@ -49,7 +49,7 @@ public sealed class TwoHandItemAutoRight  : XRBaseInteractable
 
     protected override void OnDisable()
     {
-        base.OnDisable(); // <-- регистрирует интерактабл в XRInteractionManager
+        base.OnDisable();
 #if ENABLE_INPUT_SYSTEM
         if (leftSelect && leftSelect.action != null)
         {
@@ -78,6 +78,8 @@ public sealed class TwoHandItemAutoRight  : XRBaseInteractable
 
         SetStateOnBelt(false);
         SetStateLeft(true);
+        HoldStateBus.Instance.BeginHold(HandSide.Left);
+        HoldStateBus.Instance.BeginHold(HandSide.Right);
     }
 
     private void OnLeftRelease(InputAction.CallbackContext _)
@@ -97,6 +99,8 @@ public sealed class TwoHandItemAutoRight  : XRBaseInteractable
 
         SetStateLeft(false);
         SetStateOnBelt(true);
+        HoldStateBus.Instance.EndHold(HandSide.Left);
+        HoldStateBus.Instance.EndHold(HandSide.Right);
     }
 #endif
 

@@ -6,7 +6,6 @@ public enum RadiationChannel
     None  = 0,
     Gamma = 1 << 0,
     Beta  = 1 << 1,
-    // при желании можно добавить Alpha = 1<<2 и т.д.
 }
 
 public class DosimeterSensor : MonoBehaviour
@@ -14,7 +13,7 @@ public class DosimeterSensor : MonoBehaviour
     public bool IsWorking = true;
 
     [Header("Чувствительность сенсора (что считаем)")]
-    public RadiationChannel sensitivity = RadiationChannel.Gamma; // Gamma, Beta, либо комбинировать флаги
+    public RadiationChannel sensitivity = RadiationChannel.Gamma;
 
     [Header("Точка замера (кончик зонда/антенна)")]
     public Transform probePoint;

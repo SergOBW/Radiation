@@ -85,6 +85,7 @@ public sealed class BeltItem : XRBaseInteractable
         }
 
         _isHeld = true;
+        HoldStateBus.Instance.BeginHold(HandSide.Left);
 
         // стейты
         SetStateOnBelt(false);
@@ -104,6 +105,7 @@ public sealed class BeltItem : XRBaseInteractable
         }
 
         _isHeld = false;
+        HoldStateBus.Instance.EndHold(HandSide.Left);
 
         // стейты
         SetStateLeft(false);
