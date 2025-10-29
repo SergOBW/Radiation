@@ -26,10 +26,6 @@ public class DosimeterSensor : MonoBehaviour
     [Tooltip("Максимальная дальность поиска источников")]
     public float maxSearchDistance = 50f;
 
-    [Header("Фильтр поиска (опционально)")]
-    public LayerMask sourcesQueryMask; // можно оставить Default если не используете
-    public bool usePhysicsOverlapSphere = false;
-
     public float CurrentDoseRateMicroSvPerHour { get; private set; }
 
     private float _target;
@@ -57,17 +53,8 @@ public class DosimeterSensor : MonoBehaviour
         RadiationSource[] sources;
         RadiationVolume[] volumes;
 
-        if (usePhysicsOverlapSphere)
-        {
-            var hits = Physics.OverlapSphere(pos, maxSearchDistance, ~0, QueryTriggerInteraction.Collide);
-            sources = hits.Select(h => h.GetComponent<RadiationSource>()).Where(s => s != null).ToArray();
-            volumes = hits.Select(h => h.GetComponent<RadiationVolume>()).Where(v => v != null).ToArray();
-        }
-        else
-        {
-            sources = FindObjectsByType<RadiationSource>(FindObjectsSortMode.None);
-            volumes = FindObjectsByType<RadiationVolume>(FindObjectsSortMode.None);
-        }
+        sources = FindObjectsByType<RadiationSource>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        volumes = FindObjectsByType<RadiationVolume>(FindObjectsInactive.Include, FindObjectsSortMode.None);
 
         foreach (var s in sources)
         {

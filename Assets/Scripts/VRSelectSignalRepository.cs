@@ -29,17 +29,6 @@ public sealed class VRSelectSignalRepository : MonoBehaviour
 #endif
         }
 
-        foreach (var s in selectors)
-        {
-            if (s == null) continue;
-
-            s.SetOrchestrator(_orchestrator);
-
-#if ENABLE_INPUT_SYSTEM
-            if (leftSelect != null || rightSelect != null)
-                s.ConfigureInputActions(leftSelect, rightSelect);
-#endif
-        }
     }
 
     private void OnValidate()

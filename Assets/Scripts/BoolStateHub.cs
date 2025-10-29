@@ -147,4 +147,17 @@ public sealed class BoolStateHub
         source.TrySetCanceled();
         Debug.Log("[BoolStateHub] Ожидание отменено через токен.");
     }
+
+    public void Set(string key, bool flag)
+    {
+        if (flag)
+        {
+            SetTrue(key);
+        }
+        else
+        {
+            SetFalse(key);
+        }
+
+    }
 }

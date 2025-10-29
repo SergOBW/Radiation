@@ -20,7 +20,10 @@ public sealed class SelectByTriggerOnHoverSignal : MonoBehaviour
 #endif
 
     private XRBaseInteractable _interactable;
-    [Inject] private ConversationOrchestrator _orchestrator;
+
+    [Inject] private SceneSignalHub _sceneSignalHub;
+    [Inject] private ScenarioSignalHub _scenarioSignalHub;
+
     private bool _subscribed;
 
     private void Awake()
@@ -95,7 +98,10 @@ public sealed class SelectByTriggerOnHoverSignal : MonoBehaviour
         if (_interactable != null && _interactable.isHovered)
         {
             if (!string.IsNullOrWhiteSpace(signalOnPress))
-                _orchestrator?.scenarioSignals.Emit(signalOnPress);
+            {
+                _sceneSignalHub.EmitAll(signalOnPress);
+                _scenarioSignalHub.Emit(signalOnPress);
+            }
         }
     }
 
@@ -111,9 +117,4 @@ public sealed class SelectByTriggerOnHoverSignal : MonoBehaviour
         if (wasActive) SubscribeActions();
     }
 #endif
-
-    public void SetOrchestrator(ConversationOrchestrator orchestrator)
-    {
-        _orchestrator = orchestrator;
-    }
 }

@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: WaitForCaseOnTable
   m_EditorClassIdentifier: 
   actorId: 1
-  keyPrefix: 'Placed:'
-  objectId: CaseOnTable
-  waitForTrue: 1
+  stateKeys:
+  - Placed:CaseOnTable
+  waitMode: 0
+  threshold: 1
+  checkInterval: 0.2
+  logVerbose: 1

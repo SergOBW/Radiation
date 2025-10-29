@@ -13,6 +13,10 @@ MonoBehaviour:
   m_Name: Dosimeter.Mode.Search
   m_EditorClassIdentifier: 
   actorId: 1
-  keyPrefix: 
-  objectId: Dosimeter.Mode.Search
-  waitForTrue: 1
+  stateKeys:
+  - Dosimeter.Mode.Search
+  - Item.MyTool.InLeftHand
+  waitMode: 0
+  threshold: 2
+  checkInterval: 0.2
+  logVerbose: 1
