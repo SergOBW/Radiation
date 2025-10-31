@@ -23,8 +23,8 @@ public class NotebookUIRenderer : MonoBehaviour
     public string monoEm = "0.56em";
 
     [Header("Символы статуса")]
-    public string checkMark = "✓"; // если квадраты — поставь "[+]" или "OK"
-    public string crossMark  = "✗"; // или "[ ]", "--", "X"
+    public string checkMark = "✓";
+    public string crossMark  = "✗";
 
     private void OnEnable()
     {
@@ -33,9 +33,8 @@ public class NotebookUIRenderer : MonoBehaviour
 
         if (text != null)
         {
-            text.enableWordWrapping = false; // одна строка на пункт
-            text.richText = true;            // нужны теги <mspace>
-            // Рекомендуется в инспекторе включить Auto Size у TMP_Text, чтобы точно всё влезло
+            text.enableWordWrapping = false;
+            text.richText = true;
         }
 
         Refresh();
@@ -64,14 +63,12 @@ public class NotebookUIRenderer : MonoBehaviour
                 name = name.Substring(0, Mathf.Max(0, maxNameChars - 1)) + "…";
             name = PadRight(name, colName);
 
-            // статус
             bool done = notebook.IsCompleted(z.pointName);
             string mark = PadRight(done ? checkMark : crossMark, colMark);
 
-            // значение
             string val = "—";
             if (done && notebook.TryGetValue(z.pointName, out float v))
-                val = v.ToString("N" + Mathf.Clamp(decimals, 0, 6)) + " uSv/h";
+                val = v.ToString("N" + Mathf.Clamp(decimals, 0, 6)) + " мкЗв/ч";
             val = PadRight(val, colValue);
 
             sb.Append(name).Append(mark).Append(val).Append('\n');

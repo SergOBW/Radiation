@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: House
   m_EditorClassIdentifier: Assembly-CSharp::ConversationScenarioSo
   steps:
+  - {fileID: 11400000, guid: 85200d74cfcdddc45b610e9faf857693, type: 2}
+  - {fileID: 11400000, guid: 3369c960e5ea6044f87ce89f67ba3759, type: 2}
   - {fileID: 11400000, guid: 805aad5948328354d8d64cc68bd9bac3, type: 2}
   - {fileID: 11400000, guid: 5fa979d053e32e6419ebfcf62078c186, type: 2}
   - {fileID: 11400000, guid: 780dbd3e40aed704f9c4620f0ad09783, type: 2}
@@ -26,6 +28,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a3cfa52a74b3bb947b3cc122716c4e39, type: 2}
   - {fileID: 11400000, guid: e434559f27f449a41b414e514d812670, type: 2}
   - {fileID: 11400000, guid: 116e55a743cc0b14d9bf8641fc7e3c8c, type: 2}
+  - {fileID: 11400000, guid: c498d33e78939b3408356f3c29f3b678, type: 2}
   - {fileID: 11400000, guid: 445bc429617f54d43b116c1618a6dd59, type: 2}
   - {fileID: 11400000, guid: 194fd609d34d15740bc8fbea1ed59c25, type: 2}
   - {fileID: 11400000, guid: ad28f2d6f2e6f914682112bda28e441b, type: 2}
@@ -34,6 +37,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 1bd66b8a27fe15245b171aa1ea9776eb, type: 2}
   - {fileID: 11400000, guid: 1bdded6749604a74e811d4a77fed9a08, type: 2}
   - {fileID: 11400000, guid: d7a0f05f4a580024eb82c413bd775b9a, type: 2}
+  - {fileID: 11400000, guid: 85200d74cfcdddc45b610e9faf857693, type: 2}
   - {fileID: 11400000, guid: 91689cee67e87604eb9059b6a4c7e9bc, type: 2}
   - {fileID: 11400000, guid: 6076d1f61118e9c41b7ac04dd0303b58, type: 2}
   - {fileID: 11400000, guid: f1411220d678d0543b1ac7f00b24ebc7, type: 2}

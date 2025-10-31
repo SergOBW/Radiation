@@ -1,21 +1,21 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public sealed class ControllerVisibilityByHold : MonoBehaviour
 {
-    [Header("Controller visuals")]
-    [SerializeField] private GameObject leftControllerVisual;
-    [SerializeField] private GameObject rightControllerVisual;
+    [Header("Controller visuals to toggle")]
+    [SerializeField] private List<GameObject> leftControllerVisuals = new();
+    [SerializeField] private List<GameObject> rightControllerVisuals = new();
 
     private void Start()
     {
-        if (HoldStateBus.Instance != null)
-        {
-            HoldStateBus.Instance.HoldCountChanged += OnHoldChanged;
+        if (HoldStateBus.Instance == null)
+            return;
 
-            // Синхронизируемся с текущим состоянием (на случай, если включились позже)
-            SetVisible(leftControllerVisual,  !HoldStateBus.Instance.IsHeld(HandSide.Left));
-            SetVisible(rightControllerVisual, !HoldStateBus.Instance.IsHeld(HandSide.Right));
-        }
+        HoldStateBus.Instance.HoldCountChanged += OnHoldChanged;
+
+        SetVisible(leftControllerVisuals,  !HoldStateBus.Instance.IsHeld(HandSide.Left));
+        SetVisible(rightControllerVisuals, !HoldStateBus.Instance.IsHeld(HandSide.Right));
     }
 
     private void OnDisable()
@@ -26,14 +26,21 @@ public sealed class ControllerVisibilityByHold : MonoBehaviour
 
     private void OnHoldChanged(HandSide side, int count)
     {
+        bool visible = count == 0;
         if (side == HandSide.Left)
-            SetVisible(leftControllerVisual,  count == 0);
+            SetVisible(leftControllerVisuals, visible);
         else
-            SetVisible(rightControllerVisual, count == 0);
+            SetVisible(rightControllerVisuals, visible);
     }
 
-    private static void SetVisible(GameObject go, bool visible)
+    private static void SetVisible(List<GameObject> list, bool visible)
     {
-        if (go && go.activeSelf != visible) go.SetActive(visible);
+        if (list == null) return;
+
+        foreach (var go in list)
+        {
+            if (go && go.activeSelf != visible)
+                go.SetActive(visible);
+        }
     }
 }

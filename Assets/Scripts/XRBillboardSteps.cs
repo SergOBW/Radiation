@@ -16,8 +16,12 @@ public class XRStepsPanelWithSignals : MonoBehaviour
     [Header("UI")]
     [SerializeField] private TMP_Text titleText;
     [SerializeField] private TMP_Text bodyText;
+
     [SerializeField] private Button nextButton;
     [SerializeField] private TMP_Text nextButtonLabel;
+
+    [SerializeField] private Button prevButton;
+    [SerializeField] private TMP_Text prevButtonLabel;
 
     [Header("Авто-показ пунктов")]
     [SerializeField, Min(0.05f)] private float bulletRevealInterval = 1.2f;
@@ -46,7 +50,7 @@ public class XRStepsPanelWithSignals : MonoBehaviour
 
     private void Reset()
     {
-        // Дефолтные шаги (из ТЗ)
+        // Дефолтные шаги (пример)
         steps = new StepData[3];
 
         steps[0] = new StepData
@@ -84,7 +88,6 @@ public class XRStepsPanelWithSignals : MonoBehaviour
             }
         };
 
-        // Под авто-сигналы размеры массивов подгоним под шаги
         stepStartSignals = new string[steps.Length];
         stepCompleteSignals = new string[steps.Length];
     }
@@ -96,14 +99,23 @@ public class XRStepsPanelWithSignals : MonoBehaviour
 
         EnsureSignalArraysSize();
 
-        nextButton.onClick.RemoveAllListeners();
-        nextButton.onClick.AddListener(OnNextClicked);
+        if (nextButton != null)
+        {
+            nextButton.onClick.RemoveAllListeners();
+            nextButton.onClick.AddListener(OnNextClicked);
+        }
+
+        if (prevButton != null)
+        {
+            prevButton.onClick.RemoveAllListeners();
+            prevButton.onClick.AddListener(OnPrevClicked);
+        }
     }
 
     private void OnEnable()
     {
         ClearUI();
-        EmitIfNotEmpty(restartSignal); // Старт новой сессии — удобно сигналить, чтобы сценарий «сбросился»
+        EmitIfNotEmpty(restartSignal); // новая сессия
     }
 
     private void ClearUI()
@@ -111,18 +123,21 @@ public class XRStepsPanelWithSignals : MonoBehaviour
         titleText.text = string.Empty;
         bodyText.text = string.Empty;
         SetNextButtonLabel("Начать");
+        SetPrevButtonInteractable(false);
         _currentStepIndex = 0;
         _sequenceStarted = false;
+        StopRevealRoutineIfAny();
     }
 
     private void StartScenario()
     {
         _sequenceStarted = true;
         SetNextButtonLabel("Далее");
-        ShowStep(_currentStepIndex);
+        SetPrevButtonInteractable(false); // на первом шаге «Назад» неактивна
+        ShowStep(_currentStepIndex, revealInstantly: false);
     }
 
-    private void ShowStep(int index)
+    private void ShowStep(int index, bool revealInstantly)
     {
         if (index < 0 || index >= steps.Length) return;
 
@@ -131,12 +146,24 @@ public class XRStepsPanelWithSignals : MonoBehaviour
         bodyText.text = string.Empty;
 
         _revealedCount = 0;
-        SetNextButtonLabel("Далее");
         StopRevealRoutineIfAny();
-        _revealRoutine = StartCoroutine(RevealBulletsRoutine(step));
 
-        // Сигнал «шаг начат»
+        if (revealInstantly)
+        {
+            RevealAll(step);
+            _isRevealing = false;
+            UpdateButtonLabelForStepEnd();
+        }
+        else
+        {
+            _revealRoutine = StartCoroutine(RevealBulletsRoutine(step));
+        }
+
+        // «шаг начат»
         EmitStepStarted(index);
+
+        // Кнопка «Назад» активна, если это не самый первый шаг и сценарий запущен
+        SetPrevButtonInteractable(_sequenceStarted && index > 0);
     }
 
     private IEnumerator RevealBulletsRoutine(StepData step)
@@ -162,6 +189,7 @@ public class XRStepsPanelWithSignals : MonoBehaviour
             bodyText.text += "\n• " + text;
     }
 
+    // === Кнопка «Далее» ===
     private void OnNextClicked()
     {
         if (!_sequenceStarted)
@@ -176,33 +204,59 @@ public class XRStepsPanelWithSignals : MonoBehaviour
             return;
         }
 
+        bool isLastStep = _currentStepIndex >= steps.Length - 1;
+
+        // Завершаем текущий шаг только при движении вперёд
         EmitStepCompleted(_currentStepIndex);
 
-        bool isLastStep = _currentStepIndex >= steps.Length - 1;
         if (!isLastStep)
         {
             _currentStepIndex++;
-            ShowStep(_currentStepIndex);
+            ShowStep(_currentStepIndex, revealInstantly: false);
+            SetNextButtonLabel("Далее");
         }
         else
         {
+            // Последний шаг → «Заново»
             _sequenceStarted = false;
             ClearUI();
         }
     }
 
+    // === Кнопка «Назад» ===
+    private void OnPrevClicked()
+    {
+        if (!_sequenceStarted) return; // до старта нельзя
+        if (_currentStepIndex <= 0) return;
+
+        // При возврате не шлём «Completed» следующего шага.
+        // Просто показываем предыдущий шаг, чтобы его перечитать — целиком.
+        _currentStepIndex--;
+        ShowStep(_currentStepIndex, revealInstantly: true);
+
+        // На первом шаге «Назад» неактивна
+        SetPrevButtonInteractable(_currentStepIndex > 0);
+
+        // На не-последних шагах подпись «Далее»
+        SetNextButtonLabel("Далее");
+    }
+
     private void RevealAllImmediately()
     {
         StopRevealRoutineIfAny();
-
         var step = steps[_currentStepIndex];
-        int total = step.Bullets?.Length ?? 0;
+        RevealAll(step);
+        _isRevealing = false;
+        UpdateButtonLabelForStepEnd();
+    }
 
+    private void RevealAll(StepData step)
+    {
+        int total = step.Bullets?.Length ?? 0;
         for (int i = _revealedCount; i < total; i++)
             AppendBullet(step.Bullets[i]);
 
-        _isRevealing = false;
-        UpdateButtonLabelForStepEnd();
+        _revealedCount = total;
     }
 
     private void UpdateButtonLabelForStepEnd()
@@ -217,6 +271,15 @@ public class XRStepsPanelWithSignals : MonoBehaviour
             nextButtonLabel.text = text;
     }
 
+    private void SetPrevButtonInteractable(bool interactable)
+    {
+        if (prevButton != null)
+            prevButton.interactable = interactable;
+
+        if (prevButtonLabel != null)
+            prevButtonLabel.alpha = interactable ? 1f : 0.5f;
+    }
+
     private void StopRevealRoutineIfAny()
     {
         if (_revealRoutine != null)
@@ -224,6 +287,7 @@ public class XRStepsPanelWithSignals : MonoBehaviour
             StopCoroutine(_revealRoutine);
             _revealRoutine = null;
         }
+        _isRevealing = false;
     }
 
     // ===== СИГНАЛЫ =====
