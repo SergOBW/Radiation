@@ -8764,9 +8764,25 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1287992687}
     m_Modifications:
+    - target: {fileID: 102232, guid: ed9b3755bf5a4c44e94cca620f2a57ef, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: 121550, guid: ed9b3755bf5a4c44e94cca620f2a57ef, type: 3}
       propertyPath: m_Name
       value: KitchenSetB
+      objectReference: {fileID: 0}
+    - target: {fileID: 121550, guid: ed9b3755bf5a4c44e94cca620f2a57ef, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 183630, guid: ed9b3755bf5a4c44e94cca620f2a57ef, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 196592, guid: ed9b3755bf5a4c44e94cca620f2a57ef, type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 429396, guid: ed9b3755bf5a4c44e94cca620f2a57ef, type: 3}
       propertyPath: m_LocalPosition.x
@@ -12481,9 +12497,25 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1287992687}
     m_Modifications:
+    - target: {fileID: 1000011097231290, guid: 2803e60db38d81745aa7348f50e9dd5d, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 1000011560407468, guid: 2803e60db38d81745aa7348f50e9dd5d, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: 1000013457622628, guid: 2803e60db38d81745aa7348f50e9dd5d, type: 3}
       propertyPath: m_Name
       value: Clock
+      objectReference: {fileID: 0}
+    - target: {fileID: 1000013457622628, guid: 2803e60db38d81745aa7348f50e9dd5d, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 1000013697320204, guid: 2803e60db38d81745aa7348f50e9dd5d, type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 4000013292207310, guid: 2803e60db38d81745aa7348f50e9dd5d, type: 3}
       propertyPath: m_LocalScale.x
@@ -16666,6 +16698,10 @@ PrefabInstance:
       propertyPath: quizData
       value: 
       objectReference: {fileID: 11400000, guid: e950e8e880283cd4bb16e46602bfb400, type: 2}
+    - target: {fileID: 1742788750054740618, guid: cea66aff4f86b0b438aa9b223f9291c1, type: 3}
+      propertyPath: quizIdOverride
+      value: QuizKitchen2
+      objectReference: {fileID: 0}
     - target: {fileID: 1742788750054740618, guid: cea66aff4f86b0b438aa9b223f9291c1, type: 3}
       propertyPath: wrongAnswerSignalName
       value: 
@@ -21791,6 +21827,22 @@ PrefabInstance:
     - target: {fileID: 113700, guid: 08ca164344643c54fb54aaebed18108b, type: 3}
       propertyPath: m_Name
       value: KitchenSetA_B
+      objectReference: {fileID: 0}
+    - target: {fileID: 113700, guid: 08ca164344643c54fb54aaebed18108b, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 146090, guid: 08ca164344643c54fb54aaebed18108b, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 168936, guid: 08ca164344643c54fb54aaebed18108b, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 192102, guid: 08ca164344643c54fb54aaebed18108b, type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 454160, guid: 08ca164344643c54fb54aaebed18108b, type: 3}
       propertyPath: m_LocalPosition.x
@@ -37719,6 +37771,10 @@ PrefabInstance:
       propertyPath: quizData
       value: 
       objectReference: {fileID: 11400000, guid: 1a4b991860d500f468e32ed36e9696f2, type: 2}
+    - target: {fileID: 1742788750054740618, guid: cea66aff4f86b0b438aa9b223f9291c1, type: 3}
+      propertyPath: quizIdOverride
+      value: QuizKitchen1
+      objectReference: {fileID: 0}
     - target: {fileID: 1742788750054740618, guid: cea66aff4f86b0b438aa9b223f9291c1, type: 3}
       propertyPath: wrongAnswerSignalName
       value: 
@@ -91861,6 +91917,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Toilet_closed
       objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: f209c7d3019755d4b9aba2a60eed4b03, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: f209c7d3019755d4b9aba2a60eed4b03, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.417
@@ -103283,9 +103343,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1287992687}
     m_Modifications:
+    - target: {fileID: 1000011160190054, guid: 2b215d868ae11ce4c8b5f755861b59c4, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: 1000012509312584, guid: 2b215d868ae11ce4c8b5f755861b59c4, type: 3}
       propertyPath: m_Name
       value: KitchenSetA_C
+      objectReference: {fileID: 0}
+    - target: {fileID: 1000012509312584, guid: 2b215d868ae11ce4c8b5f755861b59c4, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 1000012530144268, guid: 2b215d868ae11ce4c8b5f755861b59c4, type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 4000012584205186, guid: 2b215d868ae11ce4c8b5f755861b59c4, type: 3}
       propertyPath: m_LocalPosition.x
@@ -120495,6 +120567,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: fdeaa35ac55374345b0e9c17449a9643, type: 2}
     - target: {fileID: 1742788750054740618, guid: cea66aff4f86b0b438aa9b223f9291c1, type: 3}
+      propertyPath: quizIdOverride
+      value: QuizOutsides
+      objectReference: {fileID: 0}
+    - target: {fileID: 1742788750054740618, guid: cea66aff4f86b0b438aa9b223f9291c1, type: 3}
       propertyPath: quizCompleteSignalName
       value: Quiz.Enter.Completed
       objectReference: {fileID: 0}
@@ -129099,6 +129175,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: d46341099cc1bff4186e2b9be3bf6b0b, type: 2}
     - target: {fileID: 1742788750054740618, guid: cea66aff4f86b0b438aa9b223f9291c1, type: 3}
+      propertyPath: quizIdOverride
+      value: QuizHouse
+      objectReference: {fileID: 0}
+    - target: {fileID: 1742788750054740618, guid: cea66aff4f86b0b438aa9b223f9291c1, type: 3}
       propertyPath: wrongAnswerSignalName
       value: 
       objectReference: {fileID: 0}
@@ -132557,6 +132637,10 @@ PrefabInstance:
     - target: {fileID: 156706, guid: a6ef44ba4d88628419a46438021440e5, type: 3}
       propertyPath: m_Name
       value: ToiletPaper
+      objectReference: {fileID: 0}
+    - target: {fileID: 156706, guid: a6ef44ba4d88628419a46438021440e5, type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 407158, guid: a6ef44ba4d88628419a46438021440e5, type: 3}
       propertyPath: m_LocalPosition.x
@@ -146641,9 +146725,33 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1287992687}
     m_Modifications:
+    - target: {fileID: 104436, guid: 2c90bf975d6512945898bf7706a5ebd5, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 109668, guid: 2c90bf975d6512945898bf7706a5ebd5, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 136612, guid: 2c90bf975d6512945898bf7706a5ebd5, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 139702, guid: 2c90bf975d6512945898bf7706a5ebd5, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: 168126, guid: 2c90bf975d6512945898bf7706a5ebd5, type: 3}
       propertyPath: m_Name
       value: BathroomSink
+      objectReference: {fileID: 0}
+    - target: {fileID: 168126, guid: 2c90bf975d6512945898bf7706a5ebd5, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 181410, guid: 2c90bf975d6512945898bf7706a5ebd5, type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 447276, guid: 2c90bf975d6512945898bf7706a5ebd5, type: 3}
       propertyPath: m_LocalPosition.x
@@ -155390,6 +155498,10 @@ PrefabInstance:
     - target: {fileID: 173052, guid: 88dbcc48155f7064fa9537a4eee6126f, type: 3}
       propertyPath: m_Name
       value: SofaBigLeather
+      objectReference: {fileID: 0}
+    - target: {fileID: 173052, guid: 88dbcc48155f7064fa9537a4eee6126f, type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 438516, guid: 88dbcc48155f7064fa9537a4eee6126f, type: 3}
       propertyPath: m_LocalPosition.x
@@ -197278,6 +197390,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: Bed
       objectReference: {fileID: 0}
+    - target: {fileID: 114696, guid: cf8ff642b0af73c4d923abf8e7080ba0, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 174080, guid: cf8ff642b0af73c4d923abf8e7080ba0, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 180372, guid: cf8ff642b0af73c4d923abf8e7080ba0, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: 436280, guid: cf8ff642b0af73c4d923abf8e7080ba0, type: 3}
       propertyPath: m_LocalPosition.x
       value: -3.605
@@ -215657,6 +215781,52 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4296641989555099402, guid: 4874f83364e7c64458dded565ba8ef72, type: 3}
   m_PrefabInstance: {fileID: 1875586396}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1875680248
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1875680250}
+  - component: {fileID: 1875680249}
+  m_Layer: 0
+  m_Name: QuizScoreHandler
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1875680249
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1875680248}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e1178a1e7b8638458bdc381467b02a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  debugLogs: 1
+  debugPrefix: '[QuizScoreHandler] '
+--- !u!4 &1875680250
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1875680248}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1878105875
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -221554,6 +221724,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: BathTub_long
       objectReference: {fileID: 0}
+    - target: {fileID: 102102, guid: 787392b9acacbba4cbe0cadb6829961b, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: 445132, guid: 787392b9acacbba4cbe0cadb6829961b, type: 3}
       propertyPath: m_LocalPosition.x
       value: -1.147
@@ -224751,6 +224925,10 @@ PrefabInstance:
     - target: {fileID: 162112, guid: 193e94da2fd6dbd478c467fbb01bf292, type: 3}
       propertyPath: m_Name
       value: DiningTable
+      objectReference: {fileID: 0}
+    - target: {fileID: 162112, guid: 193e94da2fd6dbd478c467fbb01bf292, type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 476502, guid: 193e94da2fd6dbd478c467fbb01bf292, type: 3}
       propertyPath: m_LocalPosition.x
@@ -267668,3 +267846,4 @@ SceneRoots:
   - {fileID: 1051810882}
   - {fileID: 1422981808}
   - {fileID: 196669293}
+  - {fileID: 1875680250}

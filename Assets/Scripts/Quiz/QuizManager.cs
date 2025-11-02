@@ -2,13 +2,78 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using UnityEngine.Serialization;
 using VContainer;
 
 public class QuizManager : MonoBehaviour
 {
+    #if UNITY_EDITOR
+    [ContextMenu("DEBUG/Auto-Complete Quiz (Random Yes/No)")]
+    public void Debug_AutoCompleteRandom()
+    {
+        if (!Application.isPlaying)
+        {
+            Debug.LogWarning("[QuizManager] Debug_AutoCompleteRandom доступен только в Play Mode.");
+            return;
+        }
+
+        if (quizData == null || quizData.questions == null || quizData.questions.Count == 0)
+        {
+            Debug.LogWarning("[QuizManager] Нет данных квиза.");
+            return;
+        }
+
+        // убедимся, что квиз стартовал
+        if (_currentIndex < 0)
+        {
+            InitQuiz(); // тихо стартуем, если не начат
+        }
+
+        // сброс текущей сессии подсчёта
+        _score = 0;
+
+        for (int i = 0; i < quizData.questions.Count; i++)
+        {
+            var q = quizData.questions[i];
+            bool chooseCorrect = UnityEngine.Random.value < 0.5f;
+
+            int pickedIndex = q.correctIndex;
+            if (!chooseCorrect)
+            {
+                // выбираем любой неправильный индекс
+                if (q.answers.Count > 1)
+                {
+                    // найдём индекс != correctIndex
+                    int wrong = q.correctIndex;
+                    int safety = 0;
+                    while (wrong == q.correctIndex && safety < 16)
+                    {
+                        wrong = UnityEngine.Random.Range(0, q.answers.Count);
+                        safety++;
+                    }
+                    pickedIndex = wrong;
+                }
+                // если единственный вариант ответа — оставляем правильный
+            }
+
+            bool isCorrect = (pickedIndex == q.correctIndex);
+            if (isCorrect) _score++;
+
+            // учёт глобальному хендлеру + сигналы
+            if (QuizScoreHandler.Instance != null)
+                QuizScoreHandler.Instance.RegisterAnswer(quizIdOverride, isCorrect);
+
+            EmitAnswerSignal(isCorrect, i);
+        }
+
+        // показать финальный результат + завершить квиз глобально
+        ShowResult();
+
+        Debug.Log($"[QuizManager] Автоматически пройдено: {_score}/{quizData.questions.Count}");
+    }
+#endif
     [Header("Data")]
     [SerializeField] private QuizData quizData;
+    [SerializeField] private string quizIdOverride; // можно задать вручную, иначе возьмём quizData.name
 
     [Header("UI")]
     [SerializeField] private TMP_Text titleText;
@@ -39,7 +104,7 @@ public class QuizManager : MonoBehaviour
     private int  _selectedIndex = -1; // какой вариант пользователь выбрал (до проверки)
     private bool _checked = false;    // проверили ли текущий вопрос (раскрасили ответы)
 
-    private void Awake()
+    private void Start()
     {
         for (int i = 0; i < answerButtons.Count; i++)
         {
@@ -57,6 +122,17 @@ public class QuizManager : MonoBehaviour
         _currentIndex = -1;
         resultPanel.SetActive(false);
         titleText.text = quizData ? quizData.quizTitle : "Тест";
+
+        // === Старт квиза в глобальном хендлере ===
+        if (QuizScoreHandler.Instance != null)
+        {
+            string quizId = !string.IsNullOrWhiteSpace(quizIdOverride)
+                ? quizIdOverride
+                : (quizData ? quizData.name : "Quiz");
+            int totalQ = quizData ? quizData.questions.Count : 0;
+            QuizScoreHandler.Instance.StartQuiz(quizId, titleText.text, totalQ);
+        }
+
         ShowNextQuestion();
     }
 
@@ -135,37 +211,32 @@ public class QuizManager : MonoBehaviour
 
         if (!_checked)
         {
-            if (_selectedIndex < 0)
-                return;
+            if (_selectedIndex < 0) return;
 
             bool isCorrect = (_selectedIndex == q.correctIndex);
             if (isCorrect) _score++;
 
-            // Вызов сигналов с передачей индекса вопроса и выбранного индекса
+            // === учёт ответа ===
+            if (QuizScoreHandler.Instance != null)
+                QuizScoreHandler.Instance.RegisterAnswer(quizIdOverride, isCorrect);
+
             EmitAnswerSignal(isCorrect, _currentIndex);
 
+            // ... ваша раскраска и блокировка кнопок ...
             for (int i = 0; i < answerButtons.Count; i++)
             {
                 if (!answerButtons[i].gameObject.activeInHierarchy) continue;
-
                 bool btnIsCorrect = (i == q.correctIndex);
-                if (btnIsCorrect)
-                {
-                    SetButtonColor(answerButtons[i], correctColor);
-                }
+                if (btnIsCorrect) SetButtonColor(answerButtons[i], correctColor);
                 else
                 {
-                    if (i == _selectedIndex)
-                        SetButtonColor(answerButtons[i], wrongColor);
-                    else
-                        SetButtonColor(answerButtons[i], normalColor);
+                    if (i == _selectedIndex) SetButtonColor(answerButtons[i], wrongColor);
+                    else SetButtonColor(answerButtons[i], normalColor);
                 }
-
                 answerButtons[i].interactable = false;
             }
 
             _checked = true;
-
             actionButtonLabel.text = lastQuestion ? "Завершить" : "Следующий вопрос";
             actionButton.interactable = true;
         }
@@ -205,15 +276,13 @@ public class QuizManager : MonoBehaviour
         actionButton.interactable = false;
         actionButtonLabel.text = "Готово";
 
+        // === завершить квиз ===
+        if (QuizScoreHandler.Instance != null)
+            QuizScoreHandler.Instance.CompleteQuiz(quizIdOverride);
+
+        // ваши сигналы — без изменений
         bool haveSceneHub = _sceneSignalHub != null;
         bool haveScenarioHub = _scenarioSignalHub != null;
-
-        if (!haveSceneHub && !haveScenarioHub)
-        {
-            Debug.LogWarning("[QuizManager] No signal hubs injected.");
-            return;
-        }
-
         if (haveSceneHub) _sceneSignalHub.EmitAll(quizCompleteSignalName);
         if (haveScenarioHub) _scenarioSignalHub.Emit(quizCompleteSignalName);
 
