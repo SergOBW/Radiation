@@ -10,9 +10,13 @@ public sealed class PlayAnimConversationStepSo : ConversationStepSo
 
     public override async UniTask Execute(ConversationContext context)
     {
-        if (string.IsNullOrWhiteSpace(actorId) || string.IsNullOrWhiteSpace(stateName)) return;
-        IBotController b = context.repository.GetBot(actorId);
-        if (b == null) return;
-        await b.PlayAnimationAsync(stateName, normalizedTime, waitForExit, context.Token);
+        if (string.IsNullOrWhiteSpace(actorId) || string.IsNullOrWhiteSpace(stateName))
+            return;
+
+        BotAnimator animator = context.repository.GetBotAnimator(actorId);
+        if (animator == null)
+            return;
+
+        await animator.PlayAnimationAsync(stateName, normalizedTime, waitForExit, context.Token);
     }
 }

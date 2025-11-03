@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using Cysharp.Threading.Tasks;
+using System;
 using System.Threading;
 
 public sealed class SpeechService : MonoBehaviour
@@ -8,8 +9,11 @@ public sealed class SpeechService : MonoBehaviour
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private TMP_Text subtitleText;
 
-    // локальный CTS для всех текущих/будущих SpeakAsync
     private CancellationTokenSource _lifetimeCts;
+
+    public bool IsSpeaking { get; private set; }
+    public event Action SpeakingStarted;
+    public event Action SpeakingEnded;
 
     private void Awake()
     {
@@ -21,9 +25,9 @@ public sealed class SpeechService : MonoBehaviour
         _lifetimeCts = new CancellationTokenSource();
     }
 
-    private void OnDisable()  => StopAllAudioAndCancel("OnDisable");
-    private void OnDestroy()  => StopAllAudioAndCancel("OnDestroy");
-    private void OnApplicationQuit() => StopAllAudioAndCancel("OnApplicationQuit");
+    private void OnDisable()         { StopAllAudioAndCancel("OnDisable"); }
+    private void OnDestroy()         { StopAllAudioAndCancel("OnDestroy"); }
+    private void OnApplicationQuit() { StopAllAudioAndCancel("OnApplicationQuit"); }
 
     private void StopAllAudioAndCancel(string reason)
     {
@@ -38,22 +42,30 @@ public sealed class SpeechService : MonoBehaviour
         }
         if (subtitleText != null)
             subtitleText.text = string.Empty;
+
+        if (IsSpeaking)
+        {
+            IsSpeaking = false;
+            SpeakingEnded?.Invoke();
+        }
     }
 
     public async UniTask SpeakAsync(string speaker, string text, AudioClip voice, float minDisplaySeconds, CancellationToken token)
     {
         if (subtitleText != null)
-            subtitleText.text = string.IsNullOrWhiteSpace(speaker) ? text : $"{speaker}: {text}";
+            subtitleText.text = string.IsNullOrWhiteSpace(speaker) ? text : speaker + ": " + text;
 
-        // связка внешнего токена сценария + локального токена сервиса
         using (var linked = CancellationTokenSource.CreateLinkedTokenSource(token, _lifetimeCts.Token))
         {
-            var ct = linked.Token;
+            CancellationToken ct = linked.Token;
             float minTime = Mathf.Max(0f, minDisplaySeconds);
             float played = 0f;
 
             try
             {
+                IsSpeaking = true;
+                SpeakingStarted?.Invoke();
+
                 if (audioSource != null && voice != null)
                 {
                     audioSource.Stop();
@@ -81,6 +93,12 @@ public sealed class SpeechService : MonoBehaviour
                 }
                 if (subtitleText != null)
                     subtitleText.text = string.Empty;
+
+                if (IsSpeaking)
+                {
+                    IsSpeaking = false;
+                    SpeakingEnded?.Invoke();
+                }
             }
         }
     }
