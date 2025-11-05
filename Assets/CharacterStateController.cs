@@ -102,6 +102,15 @@ public sealed class CharacterStateController : MonoBehaviour
             if (!string.IsNullOrEmpty(talkingBool)) animator.SetBool(talkingBool, _currentState == CharacterState.Talking);
             if (!string.IsNullOrEmpty(walkingBool)) animator.SetBool(walkingBool, _currentState == CharacterState.Walking);
             if (!string.IsNullOrEmpty(idleBool))    animator.SetBool(idleBool,    _currentState == CharacterState.Idle);
+
+            if (_currentState == CharacterState.Idle || CurrentState == CharacterState.Talking)
+            {
+                animator.applyRootMotion = true;
+            }
+            else
+            {
+                animator.applyRootMotion = false;
+            }
         }
 
         HandleNavMeshOnTalking(_currentState == CharacterState.Talking);
