@@ -27707,9 +27707,16 @@ MonoBehaviour:
   resumeDistance: 2.5
   sampleMaxDistance: 1
   repathInterval: 0.25
-  debugLogInterval: 0
+  stillSpeedThreshold: 0.05
+  forbidStates:
+  - Talking
+  - Frozen
+  - NoFollow
   animator: {fileID: 471569534}
   speedParam: Speed
+  debugMode: 1
+  debugTick: 0.5
+  botController: {fileID: 0}
 --- !u!195 &149828672
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -27762,9 +27769,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   botRoot: {fileID: 149828675}
   navAgent: {fileID: 149828672}
-  animator: {fileID: 471569534}
-  speedParam: Speed
-  disableRootMotion: 1
   stopAgentOnArrive: 1
   repathAfterLostSec: 0.5
   debugMode: 1
@@ -27772,6 +27776,7 @@ MonoBehaviour:
   gizmoPathColor: {r: 0.2, g: 0.8, b: 1, a: 0.9}
   gizmoTargetColor: {r: 1, g: 0.4, b: 0.2, a: 0.9}
   logPathInfo: 1
+  allowDebugStateSwitch: 1
 --- !u!4 &149828675
 Transform:
   m_ObjectHideFlags: 0
@@ -105902,6 +105907,7 @@ MonoBehaviour:
   - {fileID: 1126046600}
   objectsToEnable:
   - {fileID: 1126046600}
+  disableAtStart: 1
   triggerOnce: 1
   delaySeconds: 0
   emitDelaySeconds: 0
@@ -105928,6 +105934,7 @@ MonoBehaviour:
   - {fileID: 1126046600}
   objectsToEnable:
   - {fileID: 152176759}
+  disableAtStart: 1
   triggerOnce: 1
   delaySeconds: 0
   emitDelaySeconds: 0
@@ -105954,6 +105961,7 @@ MonoBehaviour:
   - {fileID: 340100681}
   objectsToEnable:
   - {fileID: 340100681}
+  disableAtStart: 1
   triggerOnce: 1
   delaySeconds: 0
   emitDelaySeconds: 0
@@ -105980,6 +105988,7 @@ MonoBehaviour:
   - {fileID: 1126046600}
   objectsToEnable:
   - {fileID: 1051476556}
+  disableAtStart: 1
   triggerOnce: 1
   delaySeconds: 0
   emitDelaySeconds: 0
@@ -120920,6 +120929,7 @@ MonoBehaviour:
   - {fileID: 1482666683}
   - {fileID: 1463918670}
   objectsToEnable: []
+  disableAtStart: 1
   triggerOnce: 1
   delaySeconds: 0
   emitDelaySeconds: 0
@@ -204242,10 +204252,6 @@ MonoBehaviour:
   sampleRate: 10
   smoothingTime: 0.5
   maxSearchDistance: 50
-  sourcesQueryMask:
-    serializedVersion: 2
-    m_Bits: 0
-  usePhysicsOverlapSphere: 0
 --- !u!1001 &1072948414
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -229905,6 +229911,7 @@ MonoBehaviour:
   - {fileID: 1682069023}
   objectsToEnable:
   - {fileID: 1463918670}
+  disableAtStart: 1
   triggerOnce: 1
   delaySeconds: 0
   emitDelaySeconds: 0
@@ -229936,6 +229943,7 @@ MonoBehaviour:
   - {fileID: 1589501569}
   objectsToEnable:
   - {fileID: 1417784248}
+  disableAtStart: 1
   triggerOnce: 1
   delaySeconds: 0
   emitDelaySeconds: 0
@@ -229965,6 +229973,7 @@ MonoBehaviour:
   - {fileID: 1258488909}
   objectsToEnable:
   - {fileID: 1258488909}
+  disableAtStart: 1
   triggerOnce: 1
   delaySeconds: 0
   emitDelaySeconds: 0
@@ -229994,6 +230003,7 @@ MonoBehaviour:
   - {fileID: 1682069023}
   objectsToEnable:
   - {fileID: 1682069023}
+  disableAtStart: 1
   triggerOnce: 1
   delaySeconds: 0
   emitDelaySeconds: 0
@@ -230021,6 +230031,7 @@ MonoBehaviour:
   - {fileID: 1046175400}
   objectsToEnable:
   - {fileID: 1480400428}
+  disableAtStart: 1
   triggerOnce: 1
   delaySeconds: 0
   emitDelaySeconds: 0
@@ -230050,6 +230061,7 @@ MonoBehaviour:
   - {fileID: 1682069023}
   objectsToEnable:
   - {fileID: 1046175400}
+  disableAtStart: 1
   triggerOnce: 1
   delaySeconds: 0
   emitDelaySeconds: 0
@@ -230079,6 +230091,7 @@ MonoBehaviour:
   - {fileID: 1682069023}
   objectsToEnable:
   - {fileID: 1482666683}
+  disableAtStart: 1
   triggerOnce: 1
   delaySeconds: 0
   emitDelaySeconds: 0
@@ -230107,6 +230120,7 @@ MonoBehaviour:
   - {fileID: 1046175400}
   objectsToEnable:
   - {fileID: 1391837609}
+  disableAtStart: 1
   triggerOnce: 1
   delaySeconds: 0
   emitDelaySeconds: 0
@@ -230138,6 +230152,7 @@ MonoBehaviour:
   - {fileID: 1589501569}
   objectsToEnable:
   - {fileID: 1589501569}
+  disableAtStart: 1
   triggerOnce: 1
   delaySeconds: 0
   emitDelaySeconds: 0
@@ -351607,6 +351622,8 @@ MonoBehaviour:
   bodyText: {fileID: 1673517727}
   nextButton: {fileID: 2120029105}
   nextButtonLabel: {fileID: 1474013323}
+  prevButton: {fileID: 0}
+  prevButtonLabel: {fileID: 0}
   bulletRevealInterval: 0.05
   steps: []
   stepStartSignals:
@@ -374639,10 +374656,6 @@ MonoBehaviour:
   sampleRate: 10
   smoothingTime: 0.5
   maxSearchDistance: 50
-  sourcesQueryMask:
-    serializedVersion: 2
-    m_Bits: 0
-  usePhysicsOverlapSphere: 0
 --- !u!4 &1975347193
 Transform:
   m_ObjectHideFlags: 0
@@ -391847,11 +391860,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6528530117482412838, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
   m_PrefabInstance: {fileID: 2057116642}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &2057116650 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6499517531677593257, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
-  m_PrefabInstance: {fileID: 2057116642}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2057116651 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1767192434, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
@@ -391860,11 +391868,6 @@ Transform:
 --- !u!1 &2057116652 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 202364687, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
-  m_PrefabInstance: {fileID: 2057116642}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &2057116653 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4088110610454198647, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
   m_PrefabInstance: {fileID: 2057116642}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &2057116654 stripped
@@ -391898,8 +391901,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee97b38d4b1e76045954a4200f3d5f9c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  leftControllerVisual: {fileID: 2057116653}
-  rightControllerVisual: {fileID: 2057116650}
+  leftControllerVisuals: []
+  rightControllerVisuals: []
 --- !u!1001 &2057370672
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -396899,9 +396902,16 @@ MonoBehaviour:
   resumeDistance: 2.5
   sampleMaxDistance: 1
   repathInterval: 0.25
-  debugLogInterval: 0
+  stillSpeedThreshold: 0.05
+  forbidStates:
+  - Talking
+  - Frozen
+  - NoFollow
   animator: {fileID: 54342118}
   speedParam: Speed
+  debugMode: 1
+  debugTick: 0.5
+  botController: {fileID: 0}
 --- !u!195 &2088122152
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -396954,9 +396964,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   botRoot: {fileID: 2088122155}
   navAgent: {fileID: 2088122152}
-  animator: {fileID: 54342118}
-  speedParam: Speed
-  disableRootMotion: 1
   stopAgentOnArrive: 1
   repathAfterLostSec: 0.5
   debugMode: 1
@@ -396964,6 +396971,7 @@ MonoBehaviour:
   gizmoPathColor: {r: 0.2, g: 0.8, b: 1, a: 0.9}
   gizmoTargetColor: {r: 1, g: 0.4, b: 0.2, a: 0.9}
   logPathInfo: 1
+  allowDebugStateSwitch: 1
 --- !u!4 &2088122155
 Transform:
   m_ObjectHideFlags: 0

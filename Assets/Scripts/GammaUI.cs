@@ -59,7 +59,7 @@ public sealed class GammaUI : MonoBehaviour
 
         if (modeText)  modeText.text = "ИЗМЕРЕНИЕ";
         if (valueBig)  valueBig.text = $"{mean.ToString("N"+decimals)} {unitRus}";
-        if (auxText)   auxText.text  = $"Погрешность: {core.MeasurementErrorPercent:0.##}%";
+        if (auxText)   auxText.text  = $"Погрешность: ±{core.MeasurementErrorPercent:0.##}%";
     }
 
     private void ForceRefresh()
