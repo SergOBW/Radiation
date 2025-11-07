@@ -20,5 +20,6 @@ MonoBehaviour:
     answers:
     - "\u0417\u0430\u043B"
     - "\u041A\u0443\u0445\u043D\u044F"
+    - "\u0421\u043F\u0430\u043B\u044C\u043D\u044F"
     - "\u0412\u043E \u0432\u0441\u0435\u0445 \u043F\u043E\u043C\u0435\u0449\u0435\u043D\u0438\u044F\u0445"
-    correctIndex: 2
+    correctIndex: 3

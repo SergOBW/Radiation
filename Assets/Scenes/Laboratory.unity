@@ -689,7 +689,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stateKeys:
-  - Dosimeter.Mode.Measurement
+  - Dosimeter.Mode.Search
   - CanSecondRadation
   - Item.MyTool.InLeftHand
   requiredTrueCount: 3
@@ -718,7 +718,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stateKeys:
-  - Dosimeter.Mode.Betta
+  - Dosimeter.Mode.Measurement
   - CanThirdRadation
   - Item.MyTool.InLeftHand
   requiredTrueCount: 3
@@ -2262,6 +2262,17 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 605028392}
   m_SourcePrefab: {fileID: 100100000, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
+--- !u!114 &111912639 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3904215599808047960, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
+  m_PrefabInstance: {fileID: 111912638}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 834023494}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b734f2bd29eeddd4d85afb0c266228c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &116617978
 GameObject:
   m_ObjectHideFlags: 0
@@ -4419,8 +4430,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ea5df35bb0332a44beb2fe741282f42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pointName: "\u0417\u0430\u043B \u0446\u0435\u043D\u0442\u04403"
-  measureChannels: 2
+  pointName: "\u0417\u0430\u043B \u0446\u0435\u043D\u0442\u0440"
+  measureChannels: 1
   autoCollectCollidersInChildren: 1
   zoneColliders:
   - {fileID: 249299339}
@@ -4456,7 +4467,7 @@ Transform:
   m_GameObject: {fileID: 249299337}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 7.1, y: 1.332, z: 5.561}
+  m_LocalPosition: {x: 8.587, y: 0.431, z: 3.082}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4907,7 +4918,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9d26c955f4eef704fbf3f0753553efd1, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.01
+      value: -0.03748526
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9d26c955f4eef704fbf3f0753553efd1, type: 3}
       propertyPath: m_LocalPosition.z
@@ -7657,7 +7668,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ea5df35bb0332a44beb2fe741282f42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pointName: "\u0417\u0430\u043B \u0446\u0435\u043D\u0442\u0440"
+  pointName: "\u0417\u0430\u043B \u0441\u0442\u0435\u043D\u0430"
   measureChannels: 1
   autoCollectCollidersInChildren: 1
   zoneColliders:
@@ -8243,13 +8254,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85b07823f70ebb44db6241a60f2a103d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  core: {fileID: 476147916}
+  core: {fileID: 0}
   baseLoopClip: {fileID: 8300000, guid: 2d40089777534f34f90ee89219428137, type: 3}
   baseMaxVolume: 0.6
   volumeSmooth: 0.25
   pitchSmooth: 0.25
   baseReferenceRate: 100
-  minAudibleRate: 0.5
+  minAudibleRate: 0.08
   pitchRange: {x: 0.9, y: 1.25}
   volumePower: 0.7
   alarmEnabled: 1
@@ -8258,7 +8269,7 @@ MonoBehaviour:
   alarmLoopClip: {fileID: 8300000, guid: 3aa1ae596e7dc184b89e6a40a7ff25de, type: 3}
   alarmVolume: 0.6
   duckingWhileAlarm: 0.35
-  haptics: {fileID: 0}
+  haptics: {fileID: 111912639}
   hapticAmplitude: 0.4
   hapticDuration: 0.1
   spatialBlend: 1
@@ -10546,6 +10557,74 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &675262129
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 675262132}
+  - component: {fileID: 675262131}
+  - component: {fileID: 675262130}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &675262130
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 675262129}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9c669561ced0e24d8fc2f55bc17925b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  channel: 1
+  doseRateInside: 0.11
+--- !u!65 &675262131
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 675262129}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 4.6728163, y: 0.85014784, z: 5.7256055}
+  m_Center: {x: -0.84227514, y: -0.07492608, z: -0.11630893}
+--- !u!4 &675262132
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 675262129}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 9.124438, y: -0.095438, z: 3.198934}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -22378,11 +22457,11 @@ MonoBehaviour:
   - {fileID: 919132147614795514}
   - {fileID: 61708271}
   - {fileID: 6640387834040120008}
-  scenario: {fileID: 11400000, guid: 7e3563cb7a9306d4fb58e7abb13886dc, type: 2}
+  scenario: {fileID: 11400000, guid: 76aee46d4e92d0e44b20e748c33ed2db, type: 2}
   waypointRepository: {fileID: 1423372414}
   repository: {fileID: 1423372419}
   stateFlagSpeechReactorRepository: {fileID: 1423372420}
-  startStep: 0
+  startStep: 21
 --- !u!114 &1423372414
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22575,7 +22654,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   surveyManager: {fileID: 22132538}
   pointsToWatch:
-  - "\u0417\u0430\u043B \u0446\u0435\u043D\u0442\u0440"
+  - "\u0417\u0430\u043B \u0441\u0442\u0435\u043D\u0430"
   finalSignalName: HallCentreComplete
 --- !u!114 &1425448737
 MonoBehaviour:
@@ -22591,7 +22670,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   surveyManager: {fileID: 22132538}
   pointsToWatch:
-  - "\u0417\u0430\u043B \u0446\u0435\u043D\u0442\u04402"
+  - "\u0417\u0430\u043B \u043F\u043E\u043B"
   finalSignalName: HallCentreComplete2
 --- !u!114 &1425448738
 MonoBehaviour:
@@ -22607,7 +22686,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   surveyManager: {fileID: 22132538}
   pointsToWatch:
-  - "\u0417\u0430\u043B \u0446\u0435\u043D\u0442\u04403"
+  - "\u0417\u0430\u043B \u0446\u0435\u043D\u0442\u0440"
   finalSignalName: HallCentreComplete3
 --- !u!1 &1427629519
 GameObject:
@@ -24271,7 +24350,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ea5df35bb0332a44beb2fe741282f42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pointName: "\u0417\u0430\u043B \u0446\u0435\u043D\u0442\u04402"
+  pointName: "\u0417\u0430\u043B \u043F\u043E\u043B"
   measureChannels: 1
   autoCollectCollidersInChildren: 1
   zoneColliders:
@@ -24308,7 +24387,7 @@ Transform:
   m_GameObject: {fileID: 1483728015}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 8.532, y: 0.022, z: 3.285}
+  m_LocalPosition: {x: 9.045, y: 0.022, z: 5.338}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -65968,3 +66047,4 @@ SceneRoots:
   - {fileID: 1806113582}
   - {fileID: 2118773089}
   - {fileID: 412539729}
+  - {fileID: 675262132}
