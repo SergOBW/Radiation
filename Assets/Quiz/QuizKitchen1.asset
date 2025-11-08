@@ -12,8 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5af8e299638be57438992dab3b4dabb6, type: 3}
   m_Name: QuizKitchen1
   m_EditorClassIdentifier: 
-  quizTitle: "\u041A\u0443\u0445\u043D\u044F \u0432\u043E\u043F\u0440\u043E\u0441
-    1"
+  quizTitle: "\u041A\u0443\u0445\u043D\u044F"
   questions:
   - questionText: "\u0421\u043E\u043E\u0442\u0432\u0435\u0441\u0432\u0442\u0443\u0435\u0442
       \u043B\u0438 \u043D\u043E\u0440\u043C\u0430\u043C ?"

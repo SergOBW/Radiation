@@ -13,7 +13,6 @@ public enum CharacterState
 public sealed class CharacterStateController : MonoBehaviour
 {
     [Header("Links")]
-    [SerializeField] private BotController botController;
     [SerializeField] private BotAnimator botAnimator;
     [SerializeField] private NavMeshAgent navAgent;
 
@@ -24,40 +23,52 @@ public sealed class CharacterStateController : MonoBehaviour
 
     [Header("Options")]
     [SerializeField] private bool stopNavMeshWhileTalking = true;
+    [SerializeField] private float movingSpeedThreshold = 0.05f;
+    [SerializeField] private float transformMoveThreshold = 0.01f; // для ручного Warp-движения
+
+    [Header("Debug")]
+    [SerializeField] private bool debugMode = true;
+    [SerializeField] private float debugTickSeconds = 0.25f;
 
     private CharacterState _currentState;
     private bool _forceTalking;
     private bool _navWasStoppedByTalking;
+
+    private Vector3 _lastWorldPosition;
+    private float _nextDbgTime;
 
     public CharacterState CurrentState { get { return _currentState; } }
     public event Action StateChanged;
 
     private void Awake()
     {
-        if (botController == null) botController = GetComponent<BotController>();
         if (botAnimator == null) botAnimator = GetComponent<BotAnimator>();
         if (navAgent == null) navAgent = GetComponentInChildren<NavMeshAgent>();
-
+        _lastWorldPosition = transform.position;
+        Dbg("Awake: navAgent=" + (navAgent != null));
         ApplyState(CharacterState.Idle);
     }
 
     private void Update()
     {
-        CharacterState next = CalculateNextState();
-        if (next != _currentState)
+        CharacterState nextState = CalculateNextState();
+        if (nextState != _currentState)
         {
-            ApplyState(next);
+            Dbg("State change: " + _currentState + " -> " + nextState);
+            ApplyState(nextState);
             StateChanged?.Invoke();
         }
+
+        _lastWorldPosition = transform.position;
     }
 
     public void StartTalking()
     {
         _forceTalking = true;
-        CharacterState next = CharacterState.Talking;
-        if (next != _currentState)
+        Dbg("StartTalking");
+        if (_currentState != CharacterState.Talking)
         {
-            ApplyState(next);
+            ApplyState(CharacterState.Talking);
             StateChanged?.Invoke();
         }
     }
@@ -65,31 +76,110 @@ public sealed class CharacterStateController : MonoBehaviour
     public void StopTalking()
     {
         _forceTalking = false;
-        CharacterState next = CalculateNextState();
-        if (next != _currentState)
+        Dbg("StopTalking");
+        CharacterState nextState = CalculateNextState();
+        if (nextState != _currentState)
         {
-            ApplyState(next);
+            ApplyState(nextState);
             StateChanged?.Invoke();
         }
     }
 
     public void ToggleTalking()
     {
+        Dbg("ToggleTalking before: forceTalking=" + _forceTalking);
         if (_forceTalking) StopTalking();
         else StartTalking();
     }
 
     public void SetTalking(bool value)
     {
+        Dbg("SetTalking=" + value);
         if (value) StartTalking();
         else StopTalking();
     }
 
     private CharacterState CalculateNextState()
     {
-        if (_forceTalking) return CharacterState.Talking;
-        if (botController != null && botController.IsMoving) return CharacterState.Walking;
+        if (_forceTalking)
+        {
+            PeriodicDbg("Calc: forced Talking");
+            return CharacterState.Talking;
+        }
+
+        bool moving = IsMovingNow(out string reason);
+        if (moving)
+        {
+            PeriodicDbg("Calc: moving=true (" + reason + ")");
+            return CharacterState.Walking;
+        }
+
+        PeriodicDbg("Calc: moving=false");
         return CharacterState.Idle;
+    }
+
+    private bool IsMovingNow(out string reason)
+    {
+        reason = "no agent";
+        if (navAgent == null)
+        {
+            return TransformMoved(out reason);
+        }
+
+        bool onMesh = navAgent.isOnNavMesh;
+        bool stopped = navAgent.isStopped;
+        bool updatesPosition = navAgent.updatePosition;
+        bool hasPath = navAgent.hasPath;
+        float speed = navAgent.velocity.magnitude;
+        float remain = navAgent.remainingDistance;
+        float stopDist = navAgent.stoppingDistance;
+
+        // 1) Обычный режим агента
+        if (updatesPosition && !stopped && onMesh)
+        {
+            if (speed > movingSpeedThreshold)
+            {
+                reason = "speed=" + speed.ToString("0.000") + " > thr";
+                PeriodicDbg("Move(agent): on=" + onMesh + " stop=" + stopped + " updPos=" + updatesPosition + " speed=" + speed.ToString("0.000"));
+                return true;
+            }
+
+            if (hasPath && remain > stopDist + 0.02f)
+            {
+                reason = "hasPath remain=" + remain.ToString("0.00");
+                PeriodicDbg("Move(agent): path remain=" + remain.ToString("0.00"));
+                return true;
+            }
+        }
+
+        // 2) Ручное перемещение (Warp/nextPosition, updatePosition=false)
+        if (!updatesPosition || stopped || !onMesh || speed <= movingSpeedThreshold)
+        {
+            bool movedByTransform = TransformMoved(out string tReason);
+            if (movedByTransform)
+            {
+                reason = "manual " + tReason;
+                PeriodicDbg("Move(manual): " + reason + " | on=" + onMesh + " stop=" + stopped + " updPos=" + updatesPosition + " speed=" + speed.ToString("0.000"));
+                return true;
+            }
+        }
+
+        reason = "idle (speed=" + speed.ToString("0.000") + ", path=" + hasPath + ", remain=" + remain.ToString("0.00") + ")";
+        PeriodicDbg("Move(idle): on=" + onMesh + " stop=" + stopped + " updPos=" + updatesPosition + " speed=" + speed.ToString("0.000"));
+        return false;
+    }
+
+    private bool TransformMoved(out string reason)
+    {
+        Vector3 now = transform.position;
+        float dist = (now - _lastWorldPosition).magnitude;
+        if (dist > transformMoveThreshold)
+        {
+            reason = "transformΔ=" + dist.ToString("0.000") + " > thr=" + transformMoveThreshold.ToString("0.000");
+            return true;
+        }
+        reason = "transformΔ=" + dist.ToString("0.000") + " ≤ thr";
+        return false;
     }
 
     private void ApplyState(CharacterState newState)
@@ -99,18 +189,22 @@ public sealed class CharacterStateController : MonoBehaviour
         Animator animator = botAnimator != null ? botAnimator.Animator : null;
         if (animator != null)
         {
-            if (!string.IsNullOrEmpty(talkingBool)) animator.SetBool(talkingBool, _currentState == CharacterState.Talking);
-            if (!string.IsNullOrEmpty(walkingBool)) animator.SetBool(walkingBool, _currentState == CharacterState.Walking);
-            if (!string.IsNullOrEmpty(idleBool))    animator.SetBool(idleBool,    _currentState == CharacterState.Idle);
+            bool talk = _currentState == CharacterState.Talking;
+            bool walk = _currentState == CharacterState.Walking;
+            bool idle = _currentState == CharacterState.Idle;
 
-            if (_currentState == CharacterState.Idle || CurrentState == CharacterState.Talking)
-            {
-                animator.applyRootMotion = true;
-            }
-            else
-            {
-                animator.applyRootMotion = false;
-            }
+            if (!string.IsNullOrEmpty(talkingBool)) animator.SetBool(talkingBool, talk);
+            if (!string.IsNullOrEmpty(walkingBool)) animator.SetBool(walkingBool, walk);
+            if (!string.IsNullOrEmpty(idleBool))    animator.SetBool(idleBool,    idle);
+
+            bool useRoot = idle || talk;
+            animator.applyRootMotion = useRoot;
+
+            Dbg("ApplyState: " + _currentState + " | talk=" + talk + " walk=" + walk + " idle=" + idle + " root=" + useRoot);
+        }
+        else
+        {
+            Dbg("ApplyState: " + _currentState + " | animator=null");
         }
 
         HandleNavMeshOnTalking(_currentState == CharacterState.Talking);
@@ -127,6 +221,7 @@ public sealed class CharacterStateController : MonoBehaviour
             {
                 navAgent.isStopped = true;
                 _navWasStoppedByTalking = true;
+                Dbg("NavMesh: stop by Talking");
             }
         }
         else
@@ -135,7 +230,22 @@ public sealed class CharacterStateController : MonoBehaviour
             {
                 navAgent.isStopped = false;
                 _navWasStoppedByTalking = false;
+                Dbg("NavMesh: resume after Talking");
             }
         }
+    }
+
+    private void Dbg(string msg)
+    {
+        if (!debugMode) return;
+        Debug.Log("[CharacterStateController:" + name + "] " + msg);
+    }
+
+    private void PeriodicDbg(string msg)
+    {
+        if (!debugMode) return;
+        if (Time.unscaledTime < _nextDbgTime) return;
+        _nextDbgTime = Time.unscaledTime + debugTickSeconds;
+        Debug.Log("[CharacterStateController:" + name + "] " + msg);
     }
 }

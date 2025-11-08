@@ -15,5 +15,5 @@ MonoBehaviour:
   actorId: 1
   speakerName: "\u041E\u043B\u0435\u0433"
   text: "\u041F\u043E\u0439\u0434\u0435\u043C\u0442\u0435 \u0432 \u0434\u043E\u043C."
-  voice: {fileID: 8300000, guid: 62a52d1243207fd4aaa9241243309a06, type: 3}
+  voice: {fileID: 8300000, guid: 3fdde640242ac774eb15b2e1a6487217, type: 3}
   minDisplaySeconds: 3

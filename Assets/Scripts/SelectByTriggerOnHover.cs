@@ -5,10 +5,6 @@ using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using UnityEngine.InputSystem;
 #endif
 
-/// <summary>
-/// Помечает объект "виртуально выделенным", если на него наведён XR-луч/рука и выполнен триггер (InputActionReference).
-/// Подсветку НЕ делает сам — просит OutlineOnHoverXR отобразить "selected"-стиль.
-/// </summary>
 [DisallowMultipleComponent]
 [RequireComponent(typeof(XRBaseInteractable))]
 [RequireComponent(typeof(OutlineOnHoverXR))]
@@ -29,7 +25,6 @@ public sealed class SelectByTriggerOnHover : MonoBehaviour
     private float _lastPressTime;
     private bool _subscribed;
 
-    // Публичное состояние
     public bool IsSelectedVirtually => _outline != null && _outline.IsVirtualSelected();
     public System.Action<SelectByTriggerOnHover, bool> OnVirtualSelectionChanged;
 

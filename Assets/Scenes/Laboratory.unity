@@ -370,6 +370,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4000010188878348, guid: 4219613040e7ee140ba97dfa512f6a91, type: 3}
   m_PrefabInstance: {fileID: 28561014}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &40151512 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3630594833519569235, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
+  m_PrefabInstance: {fileID: 111912638}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &45763737
 GameObject:
   m_ObjectHideFlags: 0
@@ -2479,11 +2484,22 @@ MonoBehaviour:
   - {fileID: 1682859851}
   - {fileID: 1073092250}
   - {fileID: 957904127}
+  - {fileID: 306811757}
+  - {fileID: 370133874}
+  - {fileID: 40151512}
   rightControllerVisuals:
   - {fileID: 618439435}
   - {fileID: 1782660134}
   - {fileID: 1487649848}
   - {fileID: 1297920024}
+  - {fileID: 413217545}
+  - {fileID: 1316160020}
+  leftControllerBehaviours:
+  - {fileID: 834023502}
+  - {fileID: 957904128}
+  rightControllerBehaviours:
+  - {fileID: 605028394}
+  - {fileID: 1487649849}
 --- !u!4 &122740249 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8298045291338814965, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
@@ -5313,6 +5329,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &306811757 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3630594832798686509, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
+  m_PrefabInstance: {fileID: 111912638}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &308593878
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6090,6 +6111,11 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 4000010069106866, guid: 4237351595b07d04d8164f2b0ba1b171, type: 3}
   m_PrefabInstance: {fileID: 359476177}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &370133874 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3630594833077724378, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
+  m_PrefabInstance: {fileID: 111912638}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &371491483
 GameObject:
@@ -7147,6 +7173,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0d69e01576ab97e43973f3c74ecd8a2f, type: 3}
+--- !u!1 &413217545 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5363608810972792788, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
+  m_PrefabInstance: {fileID: 111912638}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &416043722
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9980,6 +10011,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   handType: 1
   holdPoint: {fileID: 0}
+--- !u!114 &605028394 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 905229015085933311, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
+  m_PrefabInstance: {fileID: 111912638}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 605028385}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84f6509f3c7fa7b4899c9c767f49e622, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &614802220
 GameObject:
   m_ObjectHideFlags: 0
@@ -14130,6 +14172,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   handType: 0
   holdPoint: {fileID: 765332909}
+--- !u!114 &834023502 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1782646182773897190, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
+  m_PrefabInstance: {fileID: 111912638}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 834023494}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84f6509f3c7fa7b4899c9c767f49e622, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &852004149
 GameObject:
   m_ObjectHideFlags: 0
@@ -15921,6 +15974,17 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 8973309649235986089, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
   m_PrefabInstance: {fileID: 111912638}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &957904128 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2291735172237534479, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
+  m_PrefabInstance: {fileID: 111912638}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 957904127}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25a07ef133a37d140a87cdf1f1c75fdf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &964893891
 GameObject:
   m_ObjectHideFlags: 0
@@ -21343,6 +21407,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1130779527}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1316160020 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5363608810246726492, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
+  m_PrefabInstance: {fileID: 111912638}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1322932150
 GameObject:
   m_ObjectHideFlags: 0
@@ -22461,7 +22530,7 @@ MonoBehaviour:
   waypointRepository: {fileID: 1423372414}
   repository: {fileID: 1423372419}
   stateFlagSpeechReactorRepository: {fileID: 1423372420}
-  startStep: 21
+  startStep: 0
 --- !u!114 &1423372414
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24399,6 +24468,17 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 2132199528451332150, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
   m_PrefabInstance: {fileID: 111912638}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1487649849 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9141569775962405776, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
+  m_PrefabInstance: {fileID: 111912638}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1487649848}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25a07ef133a37d140a87cdf1f1c75fdf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1489416843
 GameObject:
   m_ObjectHideFlags: 0
@@ -31130,13 +31210,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a775ae2a4e07fe44a9be87d2696da0b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  botController: {fileID: 1885315025}
   botAnimator: {fileID: 1885315020}
   navAgent: {fileID: 1885315023}
   talkingBool: IsTalking
   walkingBool: IsWalking
   idleBool: IsIdle
   stopNavMeshWhileTalking: 1
+  movingSpeedThreshold: 0.05
+  transformMoveThreshold: 0.01
+  debugMode: 1
+  debugTickSeconds: 0.25
 --- !u!114 &1885315018
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -16,7 +16,7 @@ public sealed class FloatingArrow : MonoBehaviour
     private void Update()
     {
         float offset = Mathf.Sin(Time.time * speed) * amplitude;
-        transform.localPosition = _startPosition + new Vector3(0f, offset, 0f);
+        transform.localPosition = _startPosition + new Vector3(0f, 0f, offset);
     }
 }
 

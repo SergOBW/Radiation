@@ -17,5 +17,5 @@ MonoBehaviour:
   text: "\u041D\u0430\u0447\u0438\u043D\u0430\u0439 \u0442\u0430\u043A \u0436\u0435
     \u0441 \u0446\u0435\u043D\u0442\u0440\u0430 \u043A\u043E\u043C\u043D\u0430\u0442\u044B
     \u0438 \u0440\u0435\u0436\u0438\u043C\u0430 \u0438\u0437\u043C\u0435\u0440\u0435\u043D\u0438\u044F."
-  voice: {fileID: 8300000, guid: 269f57d63b07a604da797eed4de96bb6, type: 3}
+  voice: {fileID: 8300000, guid: e7180e223123d7f40b0483cbed711e59, type: 3}
   minDisplaySeconds: 3
