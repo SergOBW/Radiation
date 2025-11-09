@@ -1,4 +1,5 @@
 using UnityEngine;
+using VContainer;
 #if UNITY_XR_MANAGEMENT || ENABLE_VR
 using UnityEngine.XR.Interaction.Toolkit.Inputs.Haptics;
 #endif
@@ -7,16 +8,18 @@ using UnityEngine.XR.Interaction.Toolkit.Inputs.Haptics;
 public class GeigerContinuousAudio : MonoBehaviour
 {
     [Header("Источник данных")]
-    public DosimeterCore core;   // <-- вместо DosimeterSensor
+    public DosimeterCore core;
+
+    [Header("Состояния (опционально)")]
+    [Inject]public BoolStateHub stateHub;
+    public string beltStateKey = "Item.MyTool.OnBelt";
 
     [Header("БАЗОВЫЙ ШУМ (непрерывный)")]
     public AudioClip baseLoopClip;
     [Range(0f,1f)] public float baseMaxVolume = 0.6f;
     public float volumeSmooth = 0.25f;
     public float pitchSmooth = 0.25f;
-    [Tooltip("К какому уровню (µSv/h) соответствует максимальная громкость baseMaxVolume")]
     public float baseReferenceRate = 100f;
-    [Tooltip("Минимальный уровень (µSv/h), ниже которого — тишина")]
     public float minAudibleRate = 0.5f;
     public Vector2 pitchRange = new Vector2(0.9f, 1.25f);
     public float volumePower = 0.7f;
@@ -43,7 +46,6 @@ public class GeigerContinuousAudio : MonoBehaviour
     public float maxDistance = 6f;
     public float dopplerLevel = 0f;
 
-    // internals
     private AudioSource _baseSrc;
     private AudioSource _alarmSrc;
     private float _volVel, _pitchVel, _targetVol;
@@ -81,11 +83,33 @@ public class GeigerContinuousAudio : MonoBehaviour
         src.dopplerLevel = dopplerLevel;
     }
 
+    private bool IsOnBelt()
+    {
+        if (stateHub == null) return false;
+        if (string.IsNullOrEmpty(beltStateKey)) return false;
+        return stateHub.IsTrue(beltStateKey);
+    }
+
     private void Update()
     {
+        bool onBelt = IsOnBelt();
+
+        if (onBelt)
+        {
+            if (_baseSrc)
+            {
+                _targetVol = 0f;
+                _baseSrc.volume = Mathf.SmoothDamp(_baseSrc.volume, 0f, ref _volVel, volumeSmooth);
+                if (_baseSrc.isPlaying && _baseSrc.volume < 0.02f) _baseSrc.Stop();
+            }
+
+            _alarmActive = false;
+            if (_alarmSrc && _alarmSrc.isPlaying) _alarmSrc.Stop();
+            return;
+        }
+
         float rate = (core != null) ? Mathf.Max(0f, core.CurrentMicroSvPerHour) : 0f;
 
-        // базовый шум
         if (_baseSrc)
         {
             float norm = 0f;
@@ -106,7 +130,6 @@ public class GeigerContinuousAudio : MonoBehaviour
             if (!shouldPlay && _baseSrc.isPlaying && _baseSrc.volume < 0.02f) _baseSrc.Stop();
         }
 
-        // alarm
         if (_alarmSrc && alarmEnabled)
         {
             if (!_alarmActive && rate >= alarmOnThreshold)
@@ -114,7 +137,8 @@ public class GeigerContinuousAudio : MonoBehaviour
                 _alarmActive = true;
                 if (!_alarmSrc.isPlaying) _alarmSrc.Play();
 #if UNITY_XR_MANAGEMENT || ENABLE_VR
-                if (haptics) { try { haptics.SendHapticImpulse(hapticAmplitude, hapticDuration); } catch {} }
+                if (haptics) { try { haptics.SendHapticImpulse(hapticAmplitude, hapticDuration); } catch {}
+                }
 #endif
             }
             else if (_alarmActive && rate <= alarmOffThreshold)

@@ -121497,8 +121497,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 4.0235176, y: 3.2465358, z: 2.5557954}
-  m_Center: {x: -2.106897, y: 0.07859683, z: -1.6410182}
+  m_Size: {x: 3.9945602, y: 3.2465358, z: 2.5557954}
+  m_Center: {x: -2.1213758, y: 0.07859683, z: -1.6410182}
 --- !u!4 &1014945213
 Transform:
   m_ObjectHideFlags: 0
@@ -126588,12 +126588,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   core: {fileID: 1051810875}
+  beltStateKey: Item.MyTool.OnBelt
   baseLoopClip: {fileID: 8300000, guid: 2d40089777534f34f90ee89219428137, type: 3}
   baseMaxVolume: 0.6
   volumeSmooth: 0.25
   pitchSmooth: 0.25
-  baseReferenceRate: 100
-  minAudibleRate: 0.5
+  baseReferenceRate: 5
+  minAudibleRate: 0.05
   pitchRange: {x: 0.9, y: 1.25}
   volumePower: 0.7
   alarmEnabled: 1
