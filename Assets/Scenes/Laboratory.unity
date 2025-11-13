@@ -3394,6 +3394,9 @@ MonoBehaviour:
   sampleRate: 10
   smoothingTime: 0.5
   maxSearchDistance: 50
+  combineMode: 2
+  softCap: 200
+  topK: 2
 --- !u!23 &170648358
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -8286,6 +8289,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   core: {fileID: 476147916}
+  beltStateKey: Item.MyTool.OnBelt
   baseLoopClip: {fileID: 8300000, guid: 2d40089777534f34f90ee89219428137, type: 3}
   baseMaxVolume: 0.6
   volumeSmooth: 0.25
@@ -24995,12 +24999,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   channel: 1
+  spatialMode: 1
   doseRateInside: 0.1
+  centerDose: 0.1
+  boundaryDose: 0.11
+  falloffPower: 1
   waveform: 1
-  doseMin: 0.09
-  doseMax: 0.1
   periodSeconds: 10
   phaseSeconds: 0
+  animAmplitudePercent: 10
 --- !u!65 &1562049683
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -31224,6 +31231,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   botAnimator: {fileID: 1885315020}
+  botController: {fileID: 1885315025}
   navAgent: {fileID: 1885315023}
   talkingBool: IsTalking
   walkingBool: IsWalking
@@ -32076,6 +32084,9 @@ MonoBehaviour:
   sampleRate: 10
   smoothingTime: 0.5
   maxSearchDistance: 50
+  combineMode: 2
+  softCap: 200
+  topK: 2
 --- !u!4 &1929293825
 Transform:
   m_ObjectHideFlags: 0

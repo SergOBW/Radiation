@@ -53609,6 +53609,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   botAnimator: {fileID: 449335871}
+  botController: {fileID: 449335868}
   navAgent: {fileID: 449335866}
   talkingBool: IsTalking
   walkingBool: IsWalking
@@ -113142,6 +113143,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   botAnimator: {fileID: 925321723}
+  botController: {fileID: 925321721}
   navAgent: {fileID: 925321719}
   talkingBool: IsTalking
   walkingBool: IsWalking

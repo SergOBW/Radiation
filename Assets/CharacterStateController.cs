@@ -14,6 +14,7 @@ public sealed class CharacterStateController : MonoBehaviour
 {
     [Header("Links")]
     [SerializeField] private BotAnimator botAnimator;
+    [SerializeField] private BotController botController;
     [SerializeField] private NavMeshAgent navAgent;
 
     [Header("Animator Params")]
@@ -24,7 +25,7 @@ public sealed class CharacterStateController : MonoBehaviour
     [Header("Options")]
     [SerializeField] private bool stopNavMeshWhileTalking = true;
     [SerializeField] private float movingSpeedThreshold = 0.05f;
-    [SerializeField] private float transformMoveThreshold = 0.01f; // для ручного Warp-движения
+    [SerializeField] private float transformMoveThreshold = 0.01f;
 
     [Header("Debug")]
     [SerializeField] private bool debugMode = true;
@@ -107,10 +108,10 @@ public sealed class CharacterStateController : MonoBehaviour
             return CharacterState.Talking;
         }
 
-        bool moving = IsMovingNow(out string reason);
+        bool moving = botController.IsMoving;
         if (moving)
         {
-            PeriodicDbg("Calc: moving=true (" + reason + ")");
+            //PeriodicDbg("Calc: moving=true (" + reason + ")");
             return CharacterState.Walking;
         }
 
@@ -148,18 +149,6 @@ public sealed class CharacterStateController : MonoBehaviour
             {
                 reason = "hasPath remain=" + remain.ToString("0.00");
                 PeriodicDbg("Move(agent): path remain=" + remain.ToString("0.00"));
-                return true;
-            }
-        }
-
-        // 2) Ручное перемещение (Warp/nextPosition, updatePosition=false)
-        if (!updatesPosition || stopped || !onMesh || speed <= movingSpeedThreshold)
-        {
-            bool movedByTransform = TransformMoved(out string tReason);
-            if (movedByTransform)
-            {
-                reason = "manual " + tReason;
-                PeriodicDbg("Move(manual): " + reason + " | on=" + onMesh + " stop=" + stopped + " updPos=" + updatesPosition + " speed=" + speed.ToString("0.000"));
                 return true;
             }
         }

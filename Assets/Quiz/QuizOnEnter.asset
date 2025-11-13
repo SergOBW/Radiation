@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5af8e299638be57438992dab3b4dabb6, type: 3}
   m_Name: QuizOnEnter
   m_EditorClassIdentifier: 
-  quizTitle: 
+  quizTitle: "\u0423\u043B\u0438\u0446\u0430"
   questions:
   - questionText: "\u0413\u0434\u0435 \u043D\u0435\u043E\u0431\u0445\u043E\u0434\u0438\u043C\u043E
       \u0432\u044B\u043F\u043B\u043E\u043B\u043D\u0438\u0442\u044C \u0438\u0437\u043C\u0435\u0440\u0435\u043D\u0438\u044F?"
