@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db24e91a6e1342ed98efa970e39ff4c8, type: 3}
+  m_Name: Quiz
+  m_EditorClassIdentifier: Assembly-CSharp::ConversationScenarioSo
+  steps:
+  - {fileID: 11400000, guid: e76366ef96d0aaa4fa4c3978df6cbde3, type: 2}
+  - {fileID: 11400000, guid: 767105f10c2ef7f4cb534ab129cf9352, type: 2}

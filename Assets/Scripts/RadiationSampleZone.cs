@@ -22,6 +22,10 @@ public class RadiationSampleZone : MonoBehaviour
     [Header("После замера")]
     public bool deactivateOnComplete = true;
 
+    [Header("Множитель размера коллайдера для проверки")]
+    [Tooltip("Увеличивает допустимое расстояние для определения нахождения внутри коллайдера")]
+    public float graceMultiplier = 2f;
+
     public bool IsCompleted { get; set; }
 
     private void Awake()
@@ -48,14 +52,15 @@ public class RadiationSampleZone : MonoBehaviour
         if (zoneColliders == null || zoneColliders.Count == 0) return false;
 
         const float eps = 1e-5f;
-        float graceSqr = Mathf.Max(0f, grace) * Mathf.Max(0f, grace);
+        float adjustedGrace = Mathf.Max(0f, grace) * graceMultiplier;
+        float graceSqr = adjustedGrace * adjustedGrace;
 
         foreach (var col in zoneColliders)
         {
             if (col == null || !col.enabled) continue;
 
             var b = col.bounds;
-            b.Expand(grace * 2f);
+            b.Expand(adjustedGrace * 2f);
             if (!b.Contains(worldPos)) continue;
 
             Vector3 cp = col.ClosestPoint(worldPos);

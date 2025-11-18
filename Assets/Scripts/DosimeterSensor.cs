@@ -12,11 +12,11 @@ public class DosimeterSensor : MonoBehaviour
 {
     public enum CombineMode
     {
-        Additive = 0,   // как было: просто суммируем
-        Max = 1,        // берём наибольший вклад (практично для «доминирующего» источника)
-        SoftCap = 2,    // суммируем, но с мягким насыщением (не раздувается бесконечно)
-        Nearest = 3,    // по сути то же, что Max, если GetDoseRate падает с расстоянием
-        TopKMean = 4    // усредняем K самых сильных вкладов
+        Additive = 0,
+        Max = 1,
+        SoftCap = 2,
+        Nearest = 3,
+        TopKMean = 4
     }
 
     public bool IsWorking = true;
